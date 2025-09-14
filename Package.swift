@@ -15,12 +15,13 @@ let package = Package(
     products: [
         .library(
             name: "RRNavigation",
+            type: .dynamic,
             targets: ["RRNavigation"]
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/rirp53021/rr-swift-foundation.git", from: "1.8.1"),
-        .package(url: "https://github.com/rirp53021/rr-swift-persistence.git", from: "1.0.3"),
+        .package(url: "https://github.com/rirp53021/rr-swift-foundation.git", from: "1.9.0"),
+        .package(url: "https://github.com/rirp53021/rr-swift-persistence.git", from: "1.1.0"),
         .package(url: "https://github.com/apple/swift-testing.git", from: "0.99.0")
     ],
     targets: [

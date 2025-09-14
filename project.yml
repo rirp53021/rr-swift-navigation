@@ -14,12 +14,12 @@ options:
 packages:
   RRFoundation:
     url: https://github.com/rirp53021/rr-swift-foundation.git
-    from: 1.8.1
+    from: 1.9.0
     generateScheme: false
   
   RRPersistence:
     url: https://github.com/rirp53021/rr-swift-persistence.git
-    from: 1.0.3
+    from: 1.1.0
     generateScheme: false
 
 settings:
@@ -49,15 +49,16 @@ targets:
       SWIFT_ENABLE_LIBRARY_EVOLUTION: true
       SWIFT_COMPILATION_MODE: "wholemodule"
       SKIP_INSTALL: false
-      DEFINES_MODULE: false
+      DEFINES_MODULE: true
+      MACH_O_TYPE: mh_dylib
     info:
       path: Sources/RRNavigation/Info.plist
       properties:
         CFBundleName: RRNavigation
         CFBundleDisplayName: RRNavigation
         CFBundleIdentifier: com.rrnavigation.core
-        CFBundleVersion: "1.0.0"
-        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1.1.0"
+        CFBundleShortVersionString: "1.1.0"
         CFBundlePackageType: FMWK
         CFBundleInfoDictionaryVersion: "6.0"
 
