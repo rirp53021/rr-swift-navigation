@@ -1,0 +1,74 @@
+name: RRNavigation
+options:
+  bundleIdPrefix: com.rrnavigation
+  deploymentTarget:
+    iOS: "15.0"
+    macOS: "12.0"
+    tvOS: "15.0"
+    watchOS: "8.0"
+    visionOS: "1.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+
+packages:
+  RRFoundation:
+    url: https://github.com/rirp53021/rr-swift-foundation.git
+    from: 1.8.1
+    generateScheme: false
+  
+  RRPersistence:
+    url: https://github.com/rirp53021/rr-swift-persistence.git
+    from: 1.0.3
+    generateScheme: false
+
+settings:
+  SWIFT_VERSION: "5.9"
+  ENABLE_TESTING_SEARCH_PATHS: true
+  CLANG_ENABLE_MODULES: true
+  SWIFT_INSTALL_OBJC_HEADER: false
+  BUILD_LIBRARY_FOR_DISTRIBUTION: true
+  SWIFT_COMPILATION_MODE: "wholemodule"
+
+targets:
+  RRNavigation:
+    type: framework
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Sources/RRNavigation
+    dependencies:
+      - package: RRFoundation
+      - package: RRPersistence
+    settings:
+      PRODUCT_NAME: RRNavigation
+      PRODUCT_BUNDLE_IDENTIFIER: com.rrnavigation.core
+      CLANG_ENABLE_MODULES: true
+      SWIFT_INSTALL_OBJC_HEADER: false
+      BUILD_LIBRARY_FOR_DISTRIBUTION: true
+      SWIFT_ENABLE_LIBRARY_EVOLUTION: true
+      SWIFT_COMPILATION_MODE: "wholemodule"
+      SKIP_INSTALL: false
+      DEFINES_MODULE: false
+    info:
+      path: Sources/RRNavigation/Info.plist
+      properties:
+        CFBundleName: RRNavigation
+        CFBundleDisplayName: RRNavigation
+        CFBundleIdentifier: com.rrnavigation.core
+        CFBundleVersion: "1.0.0"
+        CFBundleShortVersionString: "1.0.0"
+        CFBundlePackageType: FMWK
+        CFBundleInfoDictionaryVersion: "6.0"
+
+  RRNavigationTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Tests/RRNavigationTests
+    dependencies:
+      - target: RRNavigation
+    settings:
+      PRODUCT_NAME: RRNavigationTests
+      PRODUCT_BUNDLE_IDENTIFIER: com.rrnavigation.tests
