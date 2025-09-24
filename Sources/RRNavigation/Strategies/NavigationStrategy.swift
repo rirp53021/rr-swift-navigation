@@ -8,7 +8,7 @@ public enum NavigationStrategyType: String, CaseIterable {
     case uikit
     
     @MainActor
-    public func createStrategy() -> NavigationStrategyProtocol {
+    public func createStrategy() -> NavigationStrategy {
         switch self {
         case .swiftUI:
             return SwiftUINavigationStrategy()
@@ -23,7 +23,7 @@ public class NavigationManagerFactory {
     @MainActor
     public static func create(
         strategy: NavigationStrategyType,
-        persistence: NavigationStatePersistable? = nil
+        persistence: NavigationStatePersistence? = nil
     ) -> any NavigationManagerProtocol {
         let strategyInstance = strategy.createStrategy()
         return NavigationManager(
@@ -34,14 +34,14 @@ public class NavigationManagerFactory {
     
     @MainActor
     public static func createForSwiftUI(
-        persistence: NavigationStatePersistable? = nil
+        persistence: NavigationStatePersistence? = nil
     ) -> any NavigationManagerProtocol {
         return create(strategy: .swiftUI, persistence: persistence)
     }
     
     @MainActor
     public static func createForUIKit(
-        persistence: NavigationStatePersistable? = nil
+        persistence: NavigationStatePersistence? = nil
     ) -> any NavigationManagerProtocol {
         return create(strategy: .uikit, persistence: persistence)
     }

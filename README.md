@@ -44,10 +44,10 @@ let navigationManager = NavigationManager(strategy: strategy)
 let homeFactory = SwiftUIViewFactory { context in
     HomeView(parameters: context.parameters)
 }
-try navigationManager.register(homeFactory, for: "home")
+navigationManager.register(homeFactory, for: "home")
 
 // Navigate to a route
-try await navigationManager.navigate(to: "home", parameters: RouteParameters(data: ["userId": "123"]))
+navigationManager.navigate(to: "home", parameters: RouteParameters(data: ["userId": "123"]))
 ```
 
 ### SwiftUI Integration
@@ -64,7 +64,7 @@ struct ContentView: View {
             VStack {
                 Button("Go to Home") {
                     Task {
-                        try await navigationManager.navigate(to: "home")
+                        navigationManager.navigate(to: "home")
                     }
                 }
             }
@@ -95,7 +95,7 @@ class ViewController: UIViewController {
     
     @IBAction func navigateToHome() {
         Task {
-            try await navigationManager.navigate(to: "home")
+            navigationManager.navigate(to: "home")
         }
     }
 }
@@ -132,13 +132,13 @@ Routes are registered with factories that create the appropriate view or control
 let viewFactory = SwiftUIViewFactory { context in
     MySwiftUIView(parameters: context.parameters)
 }
-try navigationManager.register(viewFactory, for: "my-route")
+navigationManager.register(viewFactory, for: "my-route")
 
 // UIKit View Controller Factory
 let controllerFactory = UIKitViewControllerFactory { context in
     MyViewController(parameters: context.parameters)
 }
-try navigationManager.register(controllerFactory, for: "my-route")
+navigationManager.register(controllerFactory, for: "my-route")
 ```
 
 ## Navigation Types
@@ -188,7 +188,7 @@ The framework provides comprehensive error handling:
 
 ```swift
 do {
-    try await navigationManager.navigate(to: "unknown-route")
+    navigationManager.navigate(to: "unknown-route")
 } catch NavigationError.routeNotFound(let key) {
     print("Route not found: \(key)")
 } catch {
@@ -211,7 +211,7 @@ let navigationManager = NavigationManager(
 )
 
 // Test navigation
-try await navigationManager.navigate(to: "test-route")
+    navigationManager.navigate(to: "test-route")
 ```
 
 ## Requirements

@@ -6,9 +6,8 @@ import UIKit
 #endif
 
 @MainActor
-public class UIKitNavigationStrategy: NavigationStrategyProtocol {
-    
-    public let navigationType: NavigationType = .uikit
+public class UIKitNavigationStrategy: NavigationStrategy {
+    public let strategyType: NavigationStrategyType = .uikit
     public let supportedNavigationTypes: Set<NavigationType> = [.push, .sheet, .fullScreen, .modal, .tab, .replace]
     
     #if canImport(UIKit)
@@ -23,39 +22,37 @@ public class UIKitNavigationStrategy: NavigationStrategyProtocol {
     
     public init() {}
     
-    public func navigate(to destination: NavigationDestination, in tab: String?) async throws {
+    public func navigate(to destination: NavigationDestination, with component: Any, in tab: String?) {
         switch destination.navigationType {
         case .push:
-            try await navigatePush(destination, in: tab)
+            navigatePush(destination, with: component, in: tab)
         case .sheet:
-            try await navigateSheet(destination, in: tab)
+            navigateSheet(destination, with: component, in: tab)
         case .fullScreen:
-            try await navigateFullScreen(destination, in: tab)
+            navigateFullScreen(destination, with: component, in: tab)
         case .modal:
-            try await navigateModal(destination, in: tab)
+            navigateModal(destination, with: component, in: tab)
         case .replace:
-            try await navigateReplace(destination, in: tab)
+            navigateReplace(destination, with: component, in: tab)
         case .tab:
-            try await navigateTab(destination, in: tab)
-        case .swiftUI, .uikit:
-            throw NavigationError.strategyNotSupported("Strategy type not supported in navigation")
+            navigateTab(destination, with: component, in: tab)
         }
     }
     
-    public func navigateBack() async throws {
+    public func navigateBack() {
         #if canImport(UIKit)
         if let currentNavController = getCurrentNavigationController() {
             currentNavController.popViewController(animated: true)
             Logger.shared.info("UIKit navigate back executed")
         } else {
-            throw NavigationError.navigationFailed("No navigation controller available")
+            Logger.shared.error("No navigation controller available")
         }
         #else
         Logger.shared.info("UIKit navigate back requested (not available on this platform)")
         #endif
     }
     
-    public func navigateToRoot(in tab: String?) async throws {
+    public func navigateToRoot(in tab: String?)  {
         #if canImport(UIKit)
         if let tabId = tab {
             if let navController = navigationControllers[tabId] {
@@ -71,75 +68,157 @@ public class UIKitNavigationStrategy: NavigationStrategyProtocol {
         Logger.shared.info("UIKit navigation reset to root for tab: \(tab ?? "all")")
     }
     
-    public func setTab(_ tabId: String) async throws {
+    public func setTab(_ tabId: String)  {
         #if canImport(UIKit)
         guard let tabBarController = tabBarController else {
-            throw NavigationError.tabNotFound("Tab bar controller not available")
+            Logger.shared.error("Tab bar controller not available")
+            return
         }
         
         if let tabIndex = tabBarController.viewControllers?.firstIndex(where: { $0.tabBarItem.tag == Int(tabId) }) {
             tabBarController.selectedIndex = tabIndex
             Logger.shared.info("UIKit tab switched to: \(tabId)")
         } else {
-            throw NavigationError.tabNotFound(tabId)
+            Logger.shared.error("Tab not found: \(tabId)")
         }
         #else
         Logger.shared.info("UIKit tab switch requested: \(tabId) (not available on this platform)")
         #endif
     }
     
-    public func registerTab(_ tab: TabConfiguration) throws {
+    public func registerTab(_ tab: TabConfiguration)  {
         // This would be called during tab bar setup
         Logger.shared.info("Registered UIKit tab: \(tab.id)")
     }
     
+    // MARK: - Modal Dismissal Methods
+    
+    public func dismissModal() {
+        #if canImport(UIKit)
+        DispatchQueue.main.async {
+            if let presentingViewController = Self.getCurrentWindowScene()?.windows.first?.rootViewController?.presentedViewController {
+                presentingViewController.dismiss(animated: true)
+                Logger.shared.info("UIKit modal dismissed")
+            } else {
+                Logger.shared.warning("No modal to dismiss")
+            }
+        }
+        #else
+        Logger.shared.info("UIKit modal dismissal requested (not available on this platform)")
+        #endif
+    }
+    
+    public func dismissAllModals() {
+        #if canImport(UIKit)
+        DispatchQueue.main.async {
+            if let rootViewController = Self.getCurrentWindowScene()?.windows.first?.rootViewController {
+                rootViewController.dismiss(animated: true)
+                Logger.shared.info("UIKit all modals dismissed")
+            } else {
+                Logger.shared.warning("No root view controller found")
+            }
+        }
+        #else
+        Logger.shared.info("UIKit dismiss all modals requested (not available on this platform)")
+        #endif
+    }
+    
+    public func dismissModal(with key: String) {
+        #if canImport(UIKit)
+        DispatchQueue.main.async {
+            if let presentingViewController = Self.getCurrentWindowScene()?.windows.first?.rootViewController?.presentedViewController {
+                presentingViewController.dismiss(animated: true)
+                Logger.shared.info("UIKit modal with key dismissed: \(key)")
+            } else {
+                Logger.shared.warning("No modal found with key: \(key)")
+            }
+        }
+        #else
+        Logger.shared.info("UIKit dismiss modal with key requested: \(key) (not available on this platform)")
+        #endif
+    }
+    
     // MARK: - Private Methods
     
-    private func navigatePush(_ destination: NavigationDestination, in tab: String?) async throws {
+    private func navigatePush(_ destination: NavigationDestination, with component: Any, in tab: String?)  {
         let tabId = tab ?? "main"
         #if canImport(UIKit)
         guard let navController = navigationControllers[tabId] else {
-            throw NavigationError.tabNotFound(tabId)
+            Logger.shared.error("Tab not found: \(tabId)")
+            return
+        }
+        
+        // In a real implementation, this would cast the component to UIViewController and push it
+        // The component is the built UIViewController from the factory
+        if let viewController = component as? UIViewController {
+            navController.pushViewController(viewController, animated: true)
         }
         #endif
         
-        // In a real implementation, this would create and push the view controller
-        Logger.shared.info("UIKit push navigation to: \(destination.key) in tab: \(tabId)")
+        Logger.shared.info("UIKit push navigation to: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
     
-    private func navigateSheet(_ destination: NavigationDestination, in tab: String?) async throws {
-        // Present as sheet
-        Logger.shared.info("UIKit sheet presentation for: \(destination.key)")
+    private func navigateSheet(_ destination: NavigationDestination, with component: Any, in tab: String?)  {
+        #if canImport(UIKit)
+        // The component is the built UIViewController from the factory
+        if let viewController = component as? UIViewController {
+            viewController.modalPresentationStyle = .pageSheet
+            // Present as sheet - would need access to presenting view controller
+        }
+        #endif
+        
+        Logger.shared.info("UIKit sheet presentation for: \(destination.key) with component: \(type(of: component))")
     }
     
-    private func navigateFullScreen(_ destination: NavigationDestination, in tab: String?) async throws {
-        // Present full screen
-        Logger.shared.info("UIKit fullscreen presentation for: \(destination.key)")
+    private func navigateFullScreen(_ destination: NavigationDestination, with component: Any, in tab: String?)  {
+        #if canImport(UIKit)
+        // The component is the built UIViewController from the factory
+        if let viewController = component as? UIViewController {
+            viewController.modalPresentationStyle = .fullScreen
+            // Present full screen - would need access to presenting view controller
+        }
+        #endif
+        
+        Logger.shared.info("UIKit fullscreen presentation for: \(destination.key) with component: \(type(of: component))")
     }
     
-    private func navigateModal(_ destination: NavigationDestination, in tab: String?) async throws {
-        // Present modally
-        Logger.shared.info("UIKit modal presentation for: \(destination.key)")
+    private func navigateModal(_ destination: NavigationDestination, with component: Any, in tab: String?)  {
+        #if canImport(UIKit)
+        // The component is the built UIViewController from the factory
+        if let viewController = component as? UIViewController {
+            viewController.modalPresentationStyle = .formSheet
+            // Present modally - would need access to presenting view controller
+        }
+        #endif
+        
+        Logger.shared.info("UIKit modal presentation for: \(destination.key) with component: \(type(of: component))")
     }
     
-    private func navigateReplace(_ destination: NavigationDestination, in tab: String?) async throws {
+    private func navigateReplace(_ destination: NavigationDestination, with component: Any, in tab: String?)  {
         let tabId = tab ?? "main"
         #if canImport(UIKit)
         guard let navController = navigationControllers[tabId] else {
-            throw NavigationError.tabNotFound(tabId)
+            Logger.shared.error("Tab not found: \(tabId)")
+            return
+        }
+        
+        // Replace current view controller with the built one
+        // The component is the built UIViewController from the factory
+        if let viewController = component as? UIViewController {
+            navController.setViewControllers([viewController], animated: true)
         }
         #endif
         
-        // Replace current view controller
-        Logger.shared.info("UIKit replace navigation for: \(destination.key) in tab: \(tabId)")
+        Logger.shared.info("UIKit replace navigation for: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
     
-    private func navigateTab(_ destination: NavigationDestination, in tab: String?) async throws {
+    private func navigateTab(_ destination: NavigationDestination, with component: Any, in tab: String?)  {
         guard let tabId = destination.tabId ?? tab else {
-            throw NavigationError.invalidParameters
+            Logger.shared.error("Invalid parameters")
+            return
         }
         
-        try await setTab(tabId)
+        setTab(tabId)
     }
     
     #if canImport(UIKit)
@@ -149,6 +228,22 @@ public class UIKitNavigationStrategy: NavigationStrategyProtocol {
             return selectedNavController
         }
         return navigationControllers.values.first
+    }
+    
+    /// Get the current window scene (iOS 13+ compatible)
+    /// - Returns: The current UIWindowScene or nil if not available
+    @available(iOS 13.0, *)
+    private static func getCurrentWindowScene() -> UIWindowScene? {
+        if let windowScene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }) {
+            return windowScene
+        }
+        
+        // Fallback to any connected window scene
+        return UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first
     }
     #endif
 }

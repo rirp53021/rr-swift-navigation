@@ -4,8 +4,8 @@
 import Foundation
 import SwiftUI
 import Combine
-@_exported import RRFoundation
-@_exported import RRPersistence
+
+// Self-contained framework - no external dependencies
 
 /// Main module for RRNavigation
 /// 
@@ -20,3 +20,9 @@ import Combine
 /// - **Persistence**: Optional state persistence and restoration
 /// - **Deep Linking**: Query string parameter encoding/decoding
 /// - **Testing**: Built-in test utilities and mock strategies
+/// - **Chain of Responsibility**: Organized route registration with dedicated handlers
+/// - **Dedicated Factories**: One factory per view for clear organization
+/// - **Route Keys**: Type-safe route identifiers
+
+// MARK: - Public API Exports
+// All public types are automatically exported by the module

@@ -4,9 +4,9 @@ import Foundation
 import SwiftUI
 
 @MainActor
-public class SwiftUINavigationStrategy: NavigationStrategyProtocol {
+public class SwiftUINavigationStrategy: NavigationStrategy {
     
-    public let navigationType: NavigationType = .swiftUI
+    public let strategyType: NavigationStrategyType = .swiftUI
     public let supportedNavigationTypes: Set<NavigationType> = [.push, .sheet, .fullScreen, .modal]
     
     private var navigationPaths: [String: Any] = [:]
@@ -15,32 +15,30 @@ public class SwiftUINavigationStrategy: NavigationStrategyProtocol {
     
     public init() {}
     
-    public func navigate(to destination: NavigationDestination, in tab: String?) async throws {
+    public func navigate(to destination: NavigationDestination, with component: Any, in tab: String?) {
         switch destination.navigationType {
         case .push:
-            try await navigatePush(destination, in: tab)
+            navigatePush(destination, with: component, in: tab)
         case .sheet:
-            try await navigateSheet(destination, in: tab)
+            navigateSheet(destination, with: component, in: tab)
         case .fullScreen:
-            try await navigateFullScreen(destination, in: tab)
+            navigateFullScreen(destination, with: component, in: tab)
         case .modal:
-            try await navigateModal(destination, in: tab)
+            navigateModal(destination, with: component, in: tab)
         case .replace:
-            try await navigateReplace(destination, in: tab)
+            navigateReplace(destination, with: component, in: tab)
         case .tab:
-            throw NavigationError.strategyNotSupported("Tab navigation not supported in SwiftUI strategy")
-        case .swiftUI, .uikit:
-            throw NavigationError.strategyNotSupported("Strategy type not supported in navigation")
+            Logger.shared.error("Tab navigation not supported in SwiftUI strategy")
         }
     }
     
-    public func navigateBack() async throws {
+    public func navigateBack() {
         // Implementation depends on current navigation context
         // This would be handled by the SwiftUI view hierarchy
         Logger.shared.info("SwiftUI navigate back requested")
     }
     
-    public func navigateToRoot(in tab: String?) async throws {
+    public func navigateToRoot(in tab: String?) {
         if let tabId = tab {
             navigationPaths[tabId] = createNavigationPath()
         } else {
@@ -49,14 +47,32 @@ public class SwiftUINavigationStrategy: NavigationStrategyProtocol {
         Logger.shared.info("SwiftUI navigation reset to root for tab: \(tab ?? "all")")
     }
     
-    public func setTab(_ tabId: String) async throws {
+    public func setTab(_ tabId: String) {
         // Tab switching would be handled by the parent view
         Logger.shared.info("SwiftUI tab switch requested: \(tabId)")
     }
     
-    public func registerTab(_ tab: TabConfiguration) throws {
+    public func registerTab(_ tab: TabConfiguration) {
         navigationPaths[tab.id] = createNavigationPath()
         Logger.shared.info("Registered SwiftUI tab: \(tab.id)")
+    }
+    
+    // MARK: - Modal Dismissal Methods
+    
+    public func dismissModal() {
+        // In SwiftUI, modal dismissal is typically handled by the view hierarchy
+        // This would be implemented using @Environment(\.dismiss) or similar
+        Logger.shared.info("SwiftUI modal dismissal requested")
+    }
+    
+    public func dismissAllModals() {
+        // Dismiss all modals in the SwiftUI hierarchy
+        Logger.shared.info("SwiftUI dismiss all modals requested")
+    }
+    
+    public func dismissModal(with key: String) {
+        // Dismiss specific modal by key
+        Logger.shared.info("SwiftUI dismiss modal with key requested: \(key)")
     }
     
     // MARK: - Private Methods
@@ -70,40 +86,44 @@ public class SwiftUINavigationStrategy: NavigationStrategyProtocol {
         return "NavigationPath"
     }
     
-    private func navigatePush(_ destination: NavigationDestination, in tab: String?) async throws {
+    private func navigatePush(_ destination: NavigationDestination, with component: Any, in tab: String?) {
         let tabId = tab ?? "main"
         if navigationPaths[tabId] == nil {
             navigationPaths[tabId] = createNavigationPath()
         }
         
-        // In a real implementation, this would update the NavigationPath
-        // The actual navigation would be handled by SwiftUI views
-        Logger.shared.info("SwiftUI push navigation to: \(destination.key) in tab: \(tabId)")
+        // In a real implementation, this would update the NavigationPath with the built view
+        // The component is the built SwiftUI view from the factory
+        Logger.shared.info("SwiftUI push navigation to: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
     
-    private func navigateSheet(_ destination: NavigationDestination, in tab: String?) async throws {
+    private func navigateSheet(_ destination: NavigationDestination, with component: Any, in tab: String?) {
         let tabId = tab ?? "main"
         sheetPresentations[tabId] = true
-        Logger.shared.info("SwiftUI sheet presentation for: \(destination.key) in tab: \(tabId)")
+        // The component is the built SwiftUI view from the factory
+        Logger.shared.info("SwiftUI sheet presentation for: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
     
-    private func navigateFullScreen(_ destination: NavigationDestination, in tab: String?) async throws {
+    private func navigateFullScreen(_ destination: NavigationDestination, with component: Any, in tab: String?) {
         let tabId = tab ?? "main"
         fullScreenPresentations[tabId] = true
-        Logger.shared.info("SwiftUI fullscreen presentation for: \(destination.key) in tab: \(tabId)")
+        // The component is the built SwiftUI view from the factory
+        Logger.shared.info("SwiftUI fullscreen presentation for: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
     
-    private func navigateModal(_ destination: NavigationDestination, in tab: String?) async throws {
-        Logger.shared.info("SwiftUI modal presentation for: \(destination.key)")
+    private func navigateModal(_ destination: NavigationDestination, with component: Any, in tab: String?) {
+        // The component is the built SwiftUI view from the factory
+        Logger.shared.info("SwiftUI modal presentation for: \(destination.key) with component: \(type(of: component))")
     }
     
-    private func navigateReplace(_ destination: NavigationDestination, in tab: String?) async throws {
+    private func navigateReplace(_ destination: NavigationDestination, with component: Any, in tab: String?) {
         let tabId = tab ?? "main"
         if navigationPaths[tabId] == nil {
             navigationPaths[tabId] = createNavigationPath()
         }
         
-        // Replace current navigation stack
-        Logger.shared.info("SwiftUI replace navigation for: \(destination.key) in tab: \(tabId)")
+        // Replace current navigation stack with the built view
+        // The component is the built SwiftUI view from the factory
+        Logger.shared.info("SwiftUI replace navigation for: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
 }

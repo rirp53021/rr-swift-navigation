@@ -8,53 +8,77 @@ import Combine
 @MainActor
 public protocol NavigationManagerProtocol: ObservableObject {
     var currentState: NavigationState { get }
-    var activeStrategy: NavigationStrategyProtocol { get }
     
-    func register<T: RouteFactoryProtocol>(_ factory: T, for key: String) throws
-    func navigate(to key: String, parameters: RouteParameters?, in tab: String?) async throws
-    func navigateBack() async throws
-    func navigateToRoot(in tab: String?) async throws
-    func setTab(_ tabId: String) async throws
+    // Original registration methods
+    @MainActor
+    func register<T: RouteFactory>(_ factory: T, for routeKey: any RouteKey)
+    
+    // Chain of Responsibility registration methods
+    func registerRoutes(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler)
+    func registerRoute(_ routeKey: any RouteKey, using chain: RouteRegistrationHandler) -> Bool
+    func registerRoutesWithResults(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler) -> [String: Bool]
+    
+    // Navigation methods with string keys
+    func navigate(to key: String, parameters: RouteParameters?, in tab: String?)
+    func navigate(to key: String, parameters: RouteParameters?, in tab: String?, type: NavigationType)
+    
+    // Navigation methods with RouteKeys
+    func navigate(to routeKey: any RouteKey, parameters: RouteParameters?, in tab: String?)
+    
+    func navigateBack()
+    func navigateToRoot(in tab: String?)
+    func setTab(_ tabId: String)
+    func registerTab(_ tab: TabConfiguration)
+    
+    // Modal dismissal methods
+    func dismissModal()
+    func dismissAllModals()
+    func dismissModal(with key: String)
 }
 
 /// Navigation strategy protocol
 @MainActor
-public protocol NavigationStrategyProtocol {
-    var navigationType: NavigationType { get }
+public protocol NavigationStrategy {
+    var strategyType: NavigationStrategyType { get }
     var supportedNavigationTypes: Set<NavigationType> { get }
     
-    func navigate(to destination: NavigationDestination, in tab: String?) async throws
-    func navigateBack() async throws
-    func navigateToRoot(in tab: String?) async throws
-    func setTab(_ tabId: String) async throws
-    func registerTab(_ tab: TabConfiguration) throws
+    func navigate(to destination: NavigationDestination, with component: Any, in tab: String?)
+    func navigateBack()
+    func navigateToRoot(in tab: String?)
+    func setTab(_ tabId: String)
+    func registerTab(_ tab: TabConfiguration)
+    
+    // Modal dismissal methods
+    func dismissModal()
+    func dismissAllModals()
+    func dismissModal(with key: String)
 }
 
 /// Route factory protocol for type erasure
-public protocol RouteFactoryProtocol {
+public protocol RouteFactory {
     associatedtype Output
-    func build(with context: RouteContext) throws -> Output
+    func present(_ component: Output, with context: RouteContext)
 }
 
 /// SwiftUI view factory protocol
-public protocol SwiftUIViewFactoryProtocol: RouteFactoryProtocol where Output: View {
-    func buildView(with context: RouteContext) throws -> AnyView
+public protocol SwiftUIViewFactory: RouteFactory where Output: View {
+    func presentView(_ view: AnyView, with context: RouteContext)
 }
 
 /// UIKit view controller factory protocol
 #if canImport(UIKit)
-public protocol UIKitViewControllerFactoryProtocol: RouteFactoryProtocol where Output: UIViewController {
-    func buildViewController(with context: RouteContext) throws -> Output
+public protocol UIKitViewControllerFactory: RouteFactory where Output: UIViewController {
+    func presentViewController(_ viewController: UIViewController, with context: RouteContext)
 }
 #else
-public protocol UIKitViewControllerFactoryProtocol: RouteFactoryProtocol {
+public protocol UIKitViewControllerFactory: RouteFactory {
     associatedtype Output
-    func buildViewController(with context: RouteContext) throws -> Output
+    func presentViewController(_ viewController: Any, with context: RouteContext)
 }
 #endif
 
 /// Navigation state persistence protocol
-public protocol NavigationStatePersistable {
+public protocol NavigationStatePersistence {
     func save(_ state: NavigationState) throws
     func restore() throws -> NavigationState?
     func clear() throws
@@ -93,4 +117,48 @@ public struct SpringConfiguration: Codable {
         self.damping = damping
         self.response = response
     }
+}
+
+// MARK: - Route Key Protocols
+
+/// Protocol for route keys that ensures uniqueness
+public protocol RouteKey: Hashable, CustomStringConvertible {
+    /// The string identifier for the route
+    var key: String { get }
+    
+    /// The presentation type for this route
+    var presentationType: NavigationType { get }
+}
+
+/// Default implementation
+public extension RouteKey {
+    var description: String { key }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(key)
+    }
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.key == rhs.key
+    }
+}
+
+/// Concrete route key struct
+public struct RouteID: RouteKey {
+    public let key: String
+    public let presentationType: NavigationType
+    
+    public init(_ key: String, type: NavigationType = .push) {
+        self.key = key
+        self.presentationType = type
+    }
+}
+
+// MARK: - Chain of Responsibility Protocols
+
+/// Protocol for chain of responsibility handlers
+public protocol RouteRegistrationHandler {
+    var nextHandler: RouteRegistrationHandler? { get set }
+    @MainActor
+    func handleRegistration(for routeKey: any RouteKey, in manager: any NavigationManagerProtocol) -> Bool
 }

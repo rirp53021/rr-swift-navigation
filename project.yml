@@ -10,17 +10,9 @@ options:
   xcodeVersion: "15.0"
   generateEmptyDirectories: true
   groupSortPosition: top
+  defaultScheme: RRNavigation
 
-packages:
-  RRFoundation:
-    url: https://github.com/rirp53021/rr-swift-foundation.git
-    from: 1.9.0
-    generateScheme: false
-  
-  RRPersistence:
-    url: https://github.com/rirp53021/rr-swift-persistence.git
-    from: 1.1.0
-    generateScheme: false
+# Self-contained framework - no external packages needed
 
 settings:
   SWIFT_VERSION: "5.9"
@@ -37,9 +29,7 @@ targets:
     deploymentTarget: "15.0"
     sources:
       - path: Sources/RRNavigation
-    dependencies:
-      - package: RRFoundation
-      - package: RRPersistence
+    dependencies: []
     settings:
       PRODUCT_NAME: RRNavigation
       PRODUCT_BUNDLE_IDENTIFIER: com.rrnavigation.core
@@ -73,3 +63,75 @@ targets:
     settings:
       PRODUCT_NAME: RRNavigationTests
       PRODUCT_BUNDLE_IDENTIFIER: com.rrnavigation.tests
+      GENERATE_INFOPLIST_FILE: true
+
+  RRNavigationDemo:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Demo/RRNavigationDemo
+    dependencies:
+      - target: RRNavigation
+    settings:
+      PRODUCT_NAME: RRNavigationDemo
+      PRODUCT_BUNDLE_IDENTIFIER: com.rrnavigation.demo
+      PRODUCT_TYPE: com.apple.product-type.application
+      GENERATE_INFOPLIST_FILE: true
+      INFOPLIST_KEY_CFBundleDisplayName: "RRNavigation Demo"
+      INFOPLIST_KEY_CFBundleExecutable: RRNavigationDemo
+      INFOPLIST_KEY_CFBundleIdentifier: com.rrnavigation.demo
+      INFOPLIST_KEY_CFBundleName: RRNavigationDemo
+      INFOPLIST_KEY_CFBundlePackageType: APPL
+      INFOPLIST_KEY_UIApplicationSceneManifest_Generation: true
+      INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: true
+      INFOPLIST_KEY_UILaunchScreen_Generation: true
+      INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+      INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+      ENABLE_PREVIEWS: true
+      TARGETED_DEVICE_FAMILY: "1,2"
+      DEVELOPMENT_ASSET_PATHS: "\"Demo/RRNavigationDemo/Preview Content\""
+      CODE_SIGN_IDENTITY: ""
+      CODE_SIGNING_REQUIRED: "NO"
+      WRAPPER_EXTENSION: app
+      EXECUTABLE_EXTENSION: ""
+      EXECUTABLE_NAME: RRNavigationDemo
+
+schemes:
+  RRNavigation:
+    build:
+      targets:
+        RRNavigation: all
+    test:
+      targets:
+        RRNavigationTests: all
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
+  RRNavigationDemo:
+    build:
+      # IMPORTANTE: deshabilitamos buildImplicitDependencies para controlar el orden
+      buildImplicitDependencies: false
+      # El orden importa: el primer target será el que Xcode muestre como "tipo" del esquema
+      targets:
+        RRNavigationDemo: all
+        RRNavigation: all
+    run:
+      # forzamos el ejecutable a la app demo
+      executable: RRNavigationDemo
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        RRNavigationTests: all
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

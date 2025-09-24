@@ -6,11 +6,10 @@ import Combine
 
 /// Navigation state
 @MainActor
-public final class NavigationState: ObservableObject, Codable {
+public final class NavigationState: ObservableObject, @preconcurrency Codable {
     @Published public var currentTab: String?
     @Published public var tabStates: [String: TabNavigationState] = [:]
     @Published public var modalStack: [ModalDestination] = []
-    @Published public var isNavigating: Bool = false
     
     public init() {}
     
@@ -146,8 +145,6 @@ public enum NavigationType: String, CaseIterable, Codable {
     case tab
     case modal
     case replace
-    case swiftUI
-    case uikit
 }
 
 /// Tab configuration

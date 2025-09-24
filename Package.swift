@@ -17,7 +17,7 @@ let package = Package(
             name: "RRNavigation",
             type: .dynamic,
             targets: ["RRNavigation"]
-        )
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/rirp53021/rr-swift-foundation.git", from: "1.9.0"),
@@ -30,14 +30,8 @@ let package = Package(
             dependencies: [
                 .product(name: "RRFoundation", package: "rr-swift-foundation"),
                 .product(name: "RRPersistence", package: "rr-swift-persistence")
-            ]
+            ],
+            path: "Sources/RRNavigation"
         ),
-        .testTarget(
-            name: "RRNavigationTests",
-            dependencies: [
-                "RRNavigation",
-                .product(name: "Testing", package: "swift-testing")
-            ]
-        )
     ]
 )
