@@ -35,10 +35,6 @@ public class SwiftUINavigationStrategy: NavigationStrategy {
     }
     
     public func navigate(to destination: NavigationDestination, with component: Any, in tab: String?) {
-        print("🎯 SwiftUINavigationStrategy: navigate called for \(destination.key)")
-        print("🎯 SwiftUINavigationStrategy: coordinator = \(navigationCoordinator != nil ? "available" : "nil")")
-        print("🎯 SwiftUINavigationStrategy: component type = \(type(of: component))")
-        
         switch destination.navigationType {
         case .push:
             navigatePush(destination, with: component, in: tab)

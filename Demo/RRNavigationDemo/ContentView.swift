@@ -29,6 +29,13 @@ struct ContentView: View {
                 }
                 .tag(2)
             
+            NavigateBackDemoView()
+                .tabItem {
+                    Image(systemName: "arrow.left.circle.fill")
+                    Text("Back Demo")
+                }
+                .tag(3)
+            
             StrategyValidationView()
                 .tabItem {
                     Image(systemName: "checkmark.shield")

@@ -195,11 +195,44 @@ public class NavigationManager: NavigationManagerProtocol {
     }
     
     public func navigateBack() {
+        // Handle different navigation cases based on current state
+        if !currentState.modalStack.isEmpty {
+            // Case 1: Modal/Sheet/FullScreen - dismiss the topmost modal
+            let topModal = currentState.modalStack.last!
+            logger.info("Dismissing modal: \(topModal.key) with type: \(topModal.navigationType)")
+            
+            switch topModal.navigationType {
+            case .sheet, .fullScreen, .modal:
+                dismissModal()
+            default:
+                // For other types, still dismiss as modal
+                dismissModal()
+            }
+        } else if let currentTab = currentState.currentTab,
+                  let tabState = currentState.tabStates[currentTab],
+                  tabState.navigationStack.count > 1 {
+            // Case 2: Push navigation - pop the last pushed view (if not root)
+            logger.info("Popping pushed view in tab: \(currentTab)")
+            activeStrategy.navigateBack()
+            updateNavigationStateAfterBack()
+        } else if let currentTab = currentState.currentTab,
+                  let tabState = currentState.tabStates[currentTab],
+                  tabState.navigationStack.count == 1 {
+            // Case 3: Replace navigation - check if we can go back to root
+            let currentRoute = tabState.navigationStack.first!
+            if currentRoute.key != "root" && currentRoute.key != "home" {
+                logger.info("Navigating to root from replace: \(currentRoute.key)")
+                navigateToRoot(in: currentTab)
+            } else {
+                logger.warning("Already at root, cannot navigate back")
+            }
+        } else {
+            // Case 4: No navigation history or at root
+            logger.warning("No navigation history available, cannot navigate back")
+        }
         
-        activeStrategy.navigateBack()
-        updateNavigationStateAfterBack()
         saveState()
-        logger.info("Successfully navigated back")
+        logger.info("Successfully handled navigate back")
     }
     
     public func navigateToRoot(in tab: String? = nil) {
@@ -225,6 +258,50 @@ public class NavigationManager: NavigationManagerProtocol {
     }
     
     // MARK: - Modal Dismissal Methods
+    
+    /// Navigate back with specific navigation type handling
+    public func navigateBack(for navigationType: NavigationType) {
+        switch navigationType {
+        case .push:
+            // Pop the last pushed view
+            if let currentTab = currentState.currentTab,
+               let tabState = currentState.tabStates[currentTab],
+               tabState.navigationStack.count > 1 {
+                logger.info("Popping pushed view in tab: \(currentTab)")
+                activeStrategy.navigateBack()
+                updateNavigationStateAfterBack()
+            } else {
+                logger.warning("No pushed views to pop")
+            }
+            
+        case .sheet, .fullScreen, .modal:
+            // Dismiss the modal/sheet/fullscreen
+            if !currentState.modalStack.isEmpty {
+                logger.info("Dismissing \(navigationType.rawValue)")
+                dismissModal()
+            } else {
+                logger.warning("No modal to dismiss")
+            }
+            
+        case .replace:
+            // Navigate to root if not already there
+            if let currentTab = currentState.currentTab,
+               let tabState = currentState.tabStates[currentTab],
+               let currentRoute = tabState.navigationStack.first,
+               currentRoute.key != "root" && currentRoute.key != "home" {
+                logger.info("Navigating to root from replace: \(currentRoute.key)")
+                navigateToRoot(in: currentTab)
+            } else {
+                logger.warning("Already at root, cannot navigate back from replace")
+            }
+            
+        case .tab:
+            // Tab navigation doesn't have a back action
+            logger.info("Tab navigation doesn't support back navigation")
+        }
+        
+        saveState()
+    }
     
     /// Dismiss the topmost modal
     public func dismissModal() {

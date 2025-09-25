@@ -26,6 +26,7 @@ public protocol NavigationManagerProtocol: ObservableObject {
     func navigate(to routeKey: any RouteKey, parameters: RouteParameters?, in tab: String?)
     
     func navigateBack()
+    func navigateBack(for navigationType: NavigationType)
     func navigateToRoot(in tab: String?)
     func setTab(_ tabId: String)
     func registerTab(_ tab: TabConfiguration)
