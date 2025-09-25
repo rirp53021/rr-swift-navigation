@@ -65,7 +65,7 @@ struct ChainHomeView: View {
                         icon: "building.2.fill",
                         color: .blue
                     ) {
-                        navigationManager.navigate(to: RouteID.about.key)
+                        navigationManager.navigate(to: RouteID.about)
                     }
                     
                     NavigationCard<AnyView>(
@@ -295,7 +295,7 @@ struct RouteTestCard: View {
     
     var body: some View {
         Button {
-            navigationManager.navigate(to: route.key, parameters: parameters)
+            navigationManager.navigate(to: route, parameters: parameters)
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {

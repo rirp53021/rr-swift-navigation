@@ -184,7 +184,7 @@ navigationManager.dismissModal(with: "settings")
         ])
         
         navigationManager.navigate(
-            to: "settings",
+            to: RouteID.settings,
             parameters: parameters,
             type: .sheet
         )
@@ -200,7 +200,7 @@ navigationManager.dismissModal(with: "settings")
         ])
         
         navigationManager.navigate(
-            to: "settings",
+            to: RouteID.settings,
             parameters: parameters,
             type: .modal
         )
@@ -213,7 +213,7 @@ navigationManager.dismissModal(with: "settings")
         ])
         
         navigationManager.navigate(
-            to: "settings",
+            to: RouteID.settings,
             parameters: parameters,
             type: .fullScreen
         )

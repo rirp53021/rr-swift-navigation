@@ -5,7 +5,7 @@ import SwiftUI
 import UIKit
 
 /// Type-erased view factory that works with ViewComponent enum
-public class AnyViewFactory: ViewFactory {
+internal class AnyViewFactory: ViewFactory {
     private let _createView: (RouteContext) -> ViewComponent
     
     public init<T: ViewFactory>(_ factory: T) {

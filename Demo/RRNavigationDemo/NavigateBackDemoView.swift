@@ -31,27 +31,27 @@ struct NavigateBackDemoView: View {
             
             VStack(spacing: 12) {
                 Button("Navigate to Profile (Push)") {
-                    navigationManager.navigate(to: RouteID.profile.key, type: .push)
+                    navigationManager.navigate(to: RouteID.profile, type: .push)
                 }
                 .buttonStyle(.borderedProminent)
                 
                 Button("Show Settings (Sheet)") {
-                    navigationManager.navigate(to: RouteID.settings.key, type: .sheet)
+                    navigationManager.navigate(to: RouteID.settings, type: .sheet)
                 }
                 .buttonStyle(.bordered)
                 
                 Button("Show About (Full Screen)") {
-                    navigationManager.navigate(to: RouteID.about.key, type: .fullScreen)
+                    navigationManager.navigate(to: RouteID.about, type: .fullScreen)
                 }
                 .buttonStyle(.bordered)
                 
                 Button("Show Profile (Modal)") {
-                    navigationManager.navigate(to: RouteID.profile.key, type: .modal)
+                    navigationManager.navigate(to: RouteID.profile, type: .modal)
                 }
                 .buttonStyle(.bordered)
                 
                 Button("Replace with Settings") {
-                    navigationManager.navigate(to: RouteID.settings.key, type: .replace)
+                    navigationManager.navigate(to: RouteID.settings, type: .replace)
                 }
                 .buttonStyle(.bordered)
             }

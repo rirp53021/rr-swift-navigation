@@ -154,7 +154,7 @@ class ProfileViewController: UIViewController {
     
     private func editProfileTapped() {
         navigationManager.navigate(
-            to: "settings",
+            to: RouteID.settings,
             parameters: RouteParameters(data: ["section": "profile", "userId": userId, "source": "uikit"]),
             in: nil
         )
@@ -162,7 +162,7 @@ class ProfileViewController: UIViewController {
     
     private func settingsTapped() {
         navigationManager.navigate(
-            to: "settingsVC",
+            to: RouteID.settingsVC,
             parameters: RouteParameters(data: ["userId": userId, "source": "uikit"]),
             in: nil,
             type: .sheet

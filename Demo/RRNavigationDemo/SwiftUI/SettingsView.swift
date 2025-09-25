@@ -10,7 +10,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
-                Section("Profile Settings") {
+                Section(header: Text("Profile Settings")) {
                     HStack {
                         Image(systemName: "person.circle")
                             .foregroundColor(.blue)
@@ -22,7 +22,7 @@ struct SettingsView: View {
                     
                     Button("Edit Profile") {
                         navigationManager.navigate(
-                            to: "profile",
+                            to: RouteID.profile,
                             parameters: RouteParameters(data: ["userId": userId, "edit": "true"]),
                             in: nil
                         )
@@ -75,7 +75,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section("Actions") {
+                Section(header: Text("Actions")) {
                     Button("Go Back") {
                         navigationManager.navigateBack()
                     }
@@ -83,7 +83,7 @@ struct SettingsView: View {
                     
                     Button("Go to Home") {
                         navigationManager.navigate(
-                            to: "home",
+                            to: RouteID.home,
                             parameters: RouteParameters(),
                             in: nil
                         )

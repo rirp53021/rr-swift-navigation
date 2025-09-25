@@ -113,29 +113,29 @@ public class NavigationManager: NavigationManagerProtocol {
         return results
     }
     
-    public func navigate(to key: String, parameters: RouteParameters? = nil, in tab: String? = nil) {
-        guard let factory = factories[key] else {
-            logger.warning("Route not found: \(key), falling back to home")
+    public func navigate(to routeID: RouteID, parameters: RouteParameters? = nil, in tab: String? = nil) {
+        guard let factory = factories[routeID.key] else {
+            logger.warning("Route not found: \(routeID.key), falling back to home")
             // Fallback to home - would need to implement
             return
         }
         
         // Check for circular navigation
-        if navigationHistory.contains(key) {
-            logger.warning("Circular navigation detected for route: \(key)")
-            logger.error("Circular navigation error for route: \(key)")
+        if navigationHistory.contains(routeID.key) {
+            logger.warning("Circular navigation detected for route: \(routeID.key)")
+            logger.error("Circular navigation error for route: \(routeID.key)")
             return
         }
         
         let context = RouteContext(
-            key: key,
+            key: routeID.key,
             parameters: parameters ?? RouteParameters(),
-            navigationType: .push, // Default, can be overridden
+            navigationType: routeID.presentationType,
             tabId: tab
         )
         
         let destination = NavigationDestination(
-            key: key,
+            key: routeID.key,
             parameters: context.parameters,
             navigationType: context.navigationType,
             tabId: tab
@@ -143,7 +143,7 @@ public class NavigationManager: NavigationManagerProtocol {
         
         // Create the view component using the factory
         let component = factory.createView(with: context)
-        logger.info("Created view component for: \(key)")
+        logger.info("Created view component for: \(routeID.key)")
         
         // Automatically wrap the component based on the active strategy
         let wrappedComponent = wrapComponentForStrategy(component)
@@ -152,25 +152,25 @@ public class NavigationManager: NavigationManagerProtocol {
         activeStrategy.navigate(to: destination, with: wrappedComponent, in: tab)
         updateNavigationState(destination: destination)
         saveState()
-        logger.info("Successfully navigated to: \(key)")
+        logger.info("Successfully navigated to: \(routeID.key)")
     }
     
-    public func navigate(to key: String, parameters: RouteParameters? = nil, in tab: String? = nil, type: NavigationType) {
-        guard let factory = factories[key] else {
-            logger.warning("Route not found: \(key), falling back to home")
+    public func navigate(to routeID: RouteID, parameters: RouteParameters? = nil, in tab: String? = nil, type: NavigationType) {
+        guard let factory = factories[routeID.key] else {
+            logger.warning("Route not found: \(routeID.key), falling back to home")
             // Fallback to home - would need to implement
             return
         }
         
         let context = RouteContext(
-            key: key,
+            key: routeID.key,
             parameters: parameters ?? RouteParameters(),
             navigationType: type,
             tabId: tab
         )
         
         let destination = NavigationDestination(
-            key: key,
+            key: routeID.key,
             parameters: context.parameters,
             navigationType: type,
             tabId: tab
@@ -178,7 +178,7 @@ public class NavigationManager: NavigationManagerProtocol {
         
         // Create the view component using the factory
         let component = factory.createView(with: context)
-        logger.info("Created view component for: \(key)")
+        logger.info("Created view component for: \(routeID.key)")
         
         // Automatically wrap the component based on the active strategy
         let wrappedComponent = wrapComponentForStrategy(component)
@@ -187,11 +187,12 @@ public class NavigationManager: NavigationManagerProtocol {
         activeStrategy.navigate(to: destination, with: wrappedComponent, in: tab)
         updateNavigationState(destination: destination)
         saveState()
-        logger.info("Successfully navigated to: \(key) with type: \(type)")
+        logger.info("Successfully navigated to: \(routeID.key) with type: \(type)")
     }
     
     public func navigate(to routeKey: any RouteKey, parameters: RouteParameters? = nil, in tab: String? = nil) {
-        navigate(to: routeKey.key, parameters: parameters, in: tab, type: routeKey.presentationType)
+        let routeID = RouteID(routeKey.key, type: routeKey.presentationType)
+        navigate(to: routeID, parameters: parameters, in: tab, type: routeKey.presentationType)
     }
     
     public func navigateBack() {
@@ -260,7 +261,8 @@ public class NavigationManager: NavigationManagerProtocol {
     private func navigateToHome() async throws {
         // Find default tab or first tab
         let defaultTab = tabConfigurations.values.first { $0.isDefault }?.id ?? tabConfigurations.keys.first
-        navigate(to: "home", in: defaultTab)
+        let homeRouteID = RouteID("home", type: .push)
+        navigate(to: homeRouteID, in: defaultTab)
     }
     
     private func updateNavigationState(destination: NavigationDestination) {

@@ -40,8 +40,8 @@ struct RRNavigationDemoApp: App {
         manager.register(ProfileViewFactory(), for: RouteID.profile)
         print("🎯 Registering SettingsViewFactory for key: \(RouteID.settings.key)")
         manager.register(SettingsViewFactory(), for: RouteID.settings)
-        print("🎯 Registering AboutViewFactory for key: \(RouteID.about.key)")
-        manager.register(AboutViewFactory(), for: RouteID.about)
+        // AboutViewFactory was removed - using direct AboutView registration
+        print("🎯 AboutViewFactory removed - using direct view registration")
         
         // Demonstrate Chain of Responsibility with decoupled NavigationManager
         print("\n🔗 Testing Chain of Responsibility with decoupled NavigationManager:")

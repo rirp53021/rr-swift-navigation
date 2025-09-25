@@ -18,11 +18,11 @@ public protocol NavigationManagerProtocol: ObservableObject {
     func registerRoute(_ routeKey: any RouteKey, using chain: RouteRegistrationHandler) -> Bool
     func registerRoutesWithResults(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler) -> [String: Bool]
     
-    // Navigation methods with string keys
-    func navigate(to key: String, parameters: RouteParameters?, in tab: String?)
-    func navigate(to key: String, parameters: RouteParameters?, in tab: String?, type: NavigationType)
+    // Navigation methods with RouteID
+    func navigate(to routeID: RouteID, parameters: RouteParameters?, in tab: String?)
+    func navigate(to routeID: RouteID, parameters: RouteParameters?, in tab: String?, type: NavigationType)
     
-    // Navigation methods with RouteKeys
+    // Navigation methods with RouteKeys (for backward compatibility)
     func navigate(to routeKey: any RouteKey, parameters: RouteParameters?, in tab: String?)
     
     func navigateBack()
