@@ -18,9 +18,8 @@ public protocol NavigationManagerProtocol: ObservableObject {
     func registerRoute(_ routeID: RouteID, using chain: RouteRegistrationHandler) -> Bool
     func registerRoutesWithResults(_ routeIDs: [RouteID], using chain: RouteRegistrationHandler) -> [String: Bool]
     
-    // Navigation methods with RouteID
-    func navigate(to routeID: RouteID, parameters: RouteParameters?, in tab: String?)
-    func navigate(to routeID: RouteID, parameters: RouteParameters?, in tab: String?, type: NavigationType)
+    // Navigation method with RouteID
+    func navigate(to routeID: RouteID, parameters: RouteParameters?, in tab: String?, type: NavigationType?)
     
     func navigateBack()
     func navigateToRoot(in tab: String?)

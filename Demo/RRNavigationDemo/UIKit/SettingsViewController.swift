@@ -96,7 +96,8 @@ class SettingsViewController: UIViewController {
         navigationManager.navigate(
             to: RouteID.profile,
             parameters: RouteParameters(data: ["userId": userId, "edit": "true", "source": "uikit"]),
-            in: nil
+            in: nil,
+            type: nil
         )
     }
     
@@ -104,7 +105,8 @@ class SettingsViewController: UIViewController {
         navigationManager.navigate(
             to: RouteID.profileVC,
             parameters: RouteParameters(data: ["userId": userId, "source": "uikit"]),
-            in: nil
+            in: nil,
+            type: nil
         )
     }
     
@@ -116,7 +118,8 @@ class SettingsViewController: UIViewController {
         navigationManager.navigate(
             to: RouteID.home,
             parameters: RouteParameters(),
-            in: nil
+            in: nil,
+            type: nil
         )
     }
     

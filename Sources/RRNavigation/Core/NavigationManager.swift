@@ -113,7 +113,7 @@ public class NavigationManager: NavigationManagerProtocol {
         return results
     }
     
-    public func navigate(to routeID: RouteID, parameters: RouteParameters? = nil, in tab: String? = nil) {
+    public func navigate(to routeID: RouteID, parameters: RouteParameters? = nil, in tab: String? = nil, type: NavigationType? = nil) {
         guard let factory = factories[routeID.key] else {
             logger.warning("Route not found: \(routeID.key), falling back to home")
             // Fallback to home - would need to implement
@@ -127,17 +127,20 @@ public class NavigationManager: NavigationManagerProtocol {
             return
         }
         
+        // Use provided type or fall back to RouteID's default presentation type
+        let navigationType = type ?? routeID.presentationType
+        
         let context = RouteContext(
             key: routeID.key,
             parameters: parameters ?? RouteParameters(),
-            navigationType: routeID.presentationType,
+            navigationType: navigationType,
             tabId: tab
         )
         
         let destination = NavigationDestination(
             key: routeID.key,
             parameters: context.parameters,
-            navigationType: context.navigationType,
+            navigationType: navigationType,
             tabId: tab
         )
         
@@ -152,42 +155,12 @@ public class NavigationManager: NavigationManagerProtocol {
         activeStrategy.navigate(to: destination, with: wrappedComponent, in: tab)
         updateNavigationState(destination: destination)
         saveState()
-        logger.info("Successfully navigated to: \(routeID.key)")
-    }
-    
-    public func navigate(to routeID: RouteID, parameters: RouteParameters? = nil, in tab: String? = nil, type: NavigationType) {
-        guard let factory = factories[routeID.key] else {
-            logger.warning("Route not found: \(routeID.key), falling back to home")
-            // Fallback to home - would need to implement
-            return
+        
+        if let type = type {
+            logger.info("Successfully navigated to: \(routeID.key) with type: \(type)")
+        } else {
+            logger.info("Successfully navigated to: \(routeID.key)")
         }
-        
-        let context = RouteContext(
-            key: routeID.key,
-            parameters: parameters ?? RouteParameters(),
-            navigationType: type,
-            tabId: tab
-        )
-        
-        let destination = NavigationDestination(
-            key: routeID.key,
-            parameters: context.parameters,
-            navigationType: type,
-            tabId: tab
-        )
-        
-        // Create the view component using the factory
-        let component = factory.createView(with: context)
-        logger.info("Created view component for: \(routeID.key)")
-        
-        // Automatically wrap the component based on the active strategy
-        let wrappedComponent = wrapComponentForStrategy(component)
-        
-        // Present the wrapped component using the active strategy
-        activeStrategy.navigate(to: destination, with: wrappedComponent, in: tab)
-        updateNavigationState(destination: destination)
-        saveState()
-        logger.info("Successfully navigated to: \(routeID.key) with type: \(type)")
     }
     
     

@@ -156,7 +156,8 @@ class ProfileViewController: UIViewController {
         navigationManager.navigate(
             to: RouteID.settings,
             parameters: RouteParameters(data: ["section": "profile", "userId": userId, "source": "uikit"]),
-            in: nil
+            in: nil,
+            type: nil
         )
     }
     
