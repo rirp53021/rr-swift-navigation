@@ -19,32 +19,32 @@ public class AnyViewFactory: ViewFactory {
     }
 }
 
-/// Wrapper for SwiftUI views to be used in UIKit navigation
-public struct SwiftUIViewWrapper: UIViewControllerRepresentable {
+/// Internal wrapper for SwiftUI views to be used in UIKit navigation
+internal struct SwiftUIViewWrapper: UIViewControllerRepresentable {
     let view: AnyView
     
-    public init(_ view: AnyView) {
+    init(_ view: AnyView) {
         self.view = view
     }
     
-    public func makeUIViewController(context: Context) -> UIHostingController<AnyView> {
+    func makeUIViewController(context: Context) -> UIHostingController<AnyView> {
         return UIHostingController(rootView: view)
     }
     
-    public func updateUIViewController(_ uiViewController: UIHostingController<AnyView>, context: Context) {
+    func updateUIViewController(_ uiViewController: UIHostingController<AnyView>, context: Context) {
         uiViewController.rootView = view
     }
 }
 
-/// Wrapper for UIKit view controllers to be used in SwiftUI navigation
-public struct UIKitViewControllerWrapper: View {
+/// Internal wrapper for UIKit view controllers to be used in SwiftUI navigation
+internal struct UIKitViewControllerWrapper: View {
     let viewController: UIViewController
     
-    public init(_ viewController: UIViewController) {
+    init(_ viewController: UIViewController) {
         self.viewController = viewController
     }
     
-    public var body: some View {
+    var body: some View {
         UIViewControllerRepresentableWrapper(viewController)
     }
 }
