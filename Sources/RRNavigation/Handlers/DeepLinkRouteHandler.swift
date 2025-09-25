@@ -10,23 +10,23 @@ public class DeepLinkRouteHandler: BaseRouteRegistrationHandler {
         super.init()
     }
     
-    public override func canHandle(routeKey: any RouteKey) -> Bool {
+    public override func canHandle(routeID: RouteID) -> Bool {
         // Handle deep link routes
-        return routeKey.key.hasPrefix("deeplink_")
+        return routeID.key.hasPrefix("deeplink_")
     }
     
     @MainActor
-    public override func registerRoute(for routeKey: any RouteKey, in manager: any NavigationManagerProtocol) -> Bool {
+    public override func registerRoute(for routeID: RouteID, in manager: any NavigationManagerProtocol) -> Bool {
         // Check if current strategy supports deep link routes
         let supportedTypes: Set<NavigationType> = [.push, .sheet, .fullScreen, .modal]
-        guard supportedTypes.contains(routeKey.presentationType) else {
-            print("⚠️ DeepLinkRouteHandler: Strategy does not support \(routeKey.presentationType)")
+        guard supportedTypes.contains(routeID.presentationType) else {
+            print("⚠️ DeepLinkRouteHandler: Strategy does not support \(routeID.presentationType)")
             return false
         }
         
         // This handler is generic and doesn't register specific views
         // Specific deep link view registration should be done in the app layer
-        print("✅ DeepLinkRouteHandler: Can handle deep link route: \(routeKey.key)")
+        print("✅ DeepLinkRouteHandler: Can handle deep link route: \(routeID.key)")
         return true
     }
 }

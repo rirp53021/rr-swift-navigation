@@ -11,19 +11,16 @@ public protocol NavigationManagerProtocol: ObservableObject {
     
     // Registration methods
     @MainActor
-    func register<T: ViewFactory>(_ factory: T, for routeKey: any RouteKey)
+    func register<T: ViewFactory>(_ factory: T, for routeID: RouteID)
     
     // Chain of Responsibility registration methods
-    func registerRoutes(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler)
-    func registerRoute(_ routeKey: any RouteKey, using chain: RouteRegistrationHandler) -> Bool
-    func registerRoutesWithResults(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler) -> [String: Bool]
+    func registerRoutes(_ routeIDs: [RouteID], using chain: RouteRegistrationHandler)
+    func registerRoute(_ routeID: RouteID, using chain: RouteRegistrationHandler) -> Bool
+    func registerRoutesWithResults(_ routeIDs: [RouteID], using chain: RouteRegistrationHandler) -> [String: Bool]
     
     // Navigation methods with RouteID
     func navigate(to routeID: RouteID, parameters: RouteParameters?, in tab: String?)
     func navigate(to routeID: RouteID, parameters: RouteParameters?, in tab: String?, type: NavigationType)
-    
-    // Navigation methods with RouteKeys (for backward compatibility)
-    func navigate(to routeKey: any RouteKey, parameters: RouteParameters?, in tab: String?)
     
     func navigateBack()
     func navigateToRoot(in tab: String?)
@@ -114,32 +111,10 @@ public struct SpringConfiguration: Codable {
     }
 }
 
-// MARK: - Route Key Protocols
+// MARK: - Route ID
 
-/// Protocol for route keys that ensures uniqueness
-public protocol RouteKey: Hashable, CustomStringConvertible {
-    /// The string identifier for the route
-    var key: String { get }
-    
-    /// The presentation type for this route
-    var presentationType: NavigationType { get }
-}
-
-/// Default implementation
-public extension RouteKey {
-    var description: String { key }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(key)
-    }
-    
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.key == rhs.key
-    }
-}
-
-/// Concrete route key struct
-public struct RouteID: RouteKey {
+/// Concrete route identifier struct
+public struct RouteID: Hashable, CustomStringConvertible {
     public let key: String
     public let presentationType: NavigationType
     
@@ -147,6 +122,18 @@ public struct RouteID: RouteKey {
         self.key = key
         self.presentationType = type
     }
+    
+    // MARK: - Hashable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(key)
+    }
+    
+    public static func == (lhs: RouteID, rhs: RouteID) -> Bool {
+        lhs.key == rhs.key
+    }
+    
+    // MARK: - CustomStringConvertible
+    public var description: String { key }
 }
 
 // MARK: - Chain of Responsibility Protocols
@@ -155,5 +142,5 @@ public struct RouteID: RouteKey {
 public protocol RouteRegistrationHandler {
     var nextHandler: RouteRegistrationHandler? { get set }
     @MainActor
-    func handleRegistration(for routeKey: any RouteKey, in manager: any NavigationManagerProtocol) -> Bool
+    func handleRegistration(for routeID: RouteID, in manager: any NavigationManagerProtocol) -> Bool
 }

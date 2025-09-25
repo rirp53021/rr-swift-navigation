@@ -64,36 +64,36 @@ public class NavigationManager: NavigationManagerProtocol {
     }
     
     /// Register a view factory
-    public func register<T: ViewFactory>(_ factory: T, for routeKey: any RouteKey) {
-        guard !routeKey.key.isEmpty else {
+    public func register<T: ViewFactory>(_ factory: T, for routeID: RouteID) {
+        guard !routeID.key.isEmpty else {
             logger.error("Invalid route key: empty string")
             return
         }
         
-        factories[routeKey.key] = AnyViewFactory(factory)
-        logger.info("Registered view factory for key: \(routeKey.key)")
+        factories[routeID.key] = AnyViewFactory(factory)
+        logger.info("Registered view factory for key: \(routeID.key)")
     }
     
-    public func registerRoutes(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler) {
+    public func registerRoutes(_ routeIDs: [RouteID], using chain: RouteRegistrationHandler) {
         var successCount = 0
         var failureCount = 0
         
-        for routeKey in routeKeys {
-            let success = registerRoute(routeKey, using: chain)
+        for routeID in routeIDs {
+            let success = registerRoute(routeID, using: chain)
             if success {
                 successCount += 1
             } else {
                 failureCount += 1
-                logger.warning("Failed to register route: \(routeKey.key)")
+                logger.warning("Failed to register route: \(routeID.key)")
             }
         }
         
         logger.info("Route registration completed: \(successCount) successful, \(failureCount) failed")
     }
     
-    public func registerRoute(_ routeKey: any RouteKey, using chain: RouteRegistrationHandler) -> Bool {
-        let result = chain.handleRegistration(for: routeKey, in: self)
-        logger.info("Route registration result for \(routeKey.key): \(result)")
+    public func registerRoute(_ routeID: RouteID, using chain: RouteRegistrationHandler) -> Bool {
+        let result = chain.handleRegistration(for: routeID, in: self)
+        logger.info("Route registration result for \(routeID.key): \(result)")
         return result
     }
     
@@ -102,12 +102,12 @@ public class NavigationManager: NavigationManagerProtocol {
     ///   - routeKeys: Array of route keys to register
     ///   - chain: The registration handler chain
     /// - Returns: Dictionary mapping route keys to their registration success status
-    public func registerRoutesWithResults(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler) -> [String: Bool] {
+    public func registerRoutesWithResults(_ routeIDs: [RouteID], using chain: RouteRegistrationHandler) -> [String: Bool] {
         var results: [String: Bool] = [:]
         
-        for routeKey in routeKeys {
-            let success = registerRoute(routeKey, using: chain)
-            results[routeKey.key] = success
+        for routeID in routeIDs {
+            let success = registerRoute(routeID, using: chain)
+            results[routeID.key] = success
         }
         
         return results
@@ -190,10 +190,6 @@ public class NavigationManager: NavigationManagerProtocol {
         logger.info("Successfully navigated to: \(routeID.key) with type: \(type)")
     }
     
-    public func navigate(to routeKey: any RouteKey, parameters: RouteParameters? = nil, in tab: String? = nil) {
-        let routeID = RouteID(routeKey.key, type: routeKey.presentationType)
-        navigate(to: routeID, parameters: parameters, in: tab, type: routeKey.presentationType)
-    }
     
     public func navigateBack() {
         activeStrategy.navigateBack()
