@@ -15,12 +15,6 @@ struct NavigateBackDemoView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
-            Text("Force Push Back allows custom back buttons/gestures to trigger navigation even without modals")
-                .font(.caption)
-                .foregroundColor(.orange)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-            
             VStack(alignment: .leading, spacing: 15) {
                 Text("Navigation Type:")
                     .font(.headline)
@@ -77,16 +71,6 @@ struct NavigateBackDemoView: View {
                     navigationManager.navigateBack()
                 }
                 .buttonStyle(.bordered)
-                
-                Button("Force Push Back (Custom)") {
-                    // This demonstrates how to force push navigation back
-                    // even when there are no modals to dismiss
-                    if let swiftUIStrategy = navigationManager.activeStrategy as? SwiftUINavigationStrategy {
-                        swiftUIStrategy.forcePushNavigationBack()
-                    }
-                }
-                .buttonStyle(.bordered)
-                .foregroundColor(.orange)
                 
                 Button("Navigate to Root") {
                     navigationManager.navigateToRoot()
