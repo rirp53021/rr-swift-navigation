@@ -156,7 +156,7 @@ struct StrategyValidationView: View {
                 message: "✅ SwiftUI factory accepted by SwiftUI strategy"
             )
             validationResults.append(swiftUIResult)
-            manager.register(swiftUIFactory, for: .home)
+            manager.register(swiftUIFactory, for: RouteID.home)
             
             // Test UIKit factory (should fail)
             #if canImport(UIKit)
@@ -169,7 +169,7 @@ struct StrategyValidationView: View {
                 message: "❌ UIKit factory rejected by SwiftUI strategy"
             )
             validationResults.append(uikitResult)
-            manager.register(uikitFactory, for: .profileVC)
+            manager.register(uikitFactory, for: RouteID.profileVC)
             #endif
             
             isRunningTests = false
@@ -195,7 +195,7 @@ struct StrategyValidationView: View {
                 message: "✅ UIKit factory accepted by UIKit strategy"
             )
             validationResults.append(uikitResult)
-            manager.register(uikitFactory, for: .profileVC)
+            manager.register(uikitFactory, for: RouteID.profileVC)
             
             // Test SwiftUI factory (should fail)
             let swiftUIFactory = HomeViewFactory()
@@ -207,7 +207,7 @@ struct StrategyValidationView: View {
                 message: "❌ SwiftUI factory rejected by UIKit strategy"
             )
             validationResults.append(swiftUIResult)
-            manager.register(swiftUIFactory, for: .home)
+            manager.register(swiftUIFactory, for: RouteID.home)
             
             isRunningTests = false
         }

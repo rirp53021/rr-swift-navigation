@@ -3,6 +3,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import RRFoundation
 
 @MainActor
 public class NavigationManager: NavigationManagerProtocol {
@@ -11,7 +12,7 @@ public class NavigationManager: NavigationManagerProtocol {
     
     public let activeStrategy: NavigationStrategy
     private let persistence: NavigationStatePersistence?
-    private var factories: [String: AnyRouteFactory] = [:]
+    private var factories: [String: AnyViewFactory] = [:]
     private var tabConfigurations: [String: TabConfiguration] = [:]
     private var navigationHistory: [String] = []
     private let maxHistorySize = 50
@@ -39,50 +40,38 @@ public class NavigationManager: NavigationManagerProtocol {
     
     // MARK: - Public Methods
     
-    public func register<T: RouteFactory>(_ factory: T, for key: String) {
-        guard !key.isEmpty else {
-            logger.error("Invalid route key: empty string")
-            return
-        }
+    /// Automatically wrap a ViewComponent based on the active strategy
+    private func wrapComponentForStrategy(_ component: ViewComponent) -> Any {
+        let strategyType = activeStrategy.strategyType
         
-        factories[key] = AnyRouteFactory(factory)
-        logger.info("Registered route factory for key: \(key)")
+        switch (strategyType, component) {
+        case (.swiftUI, .swiftUI(let view)):
+            // SwiftUI strategy with SwiftUI view - use directly
+            return view
+            
+        case (.swiftUI, .uiKit(let viewController)):
+            // SwiftUI strategy with UIKit view controller - wrap in UIHostingController
+            return UIHostingController(rootView: UIKitViewControllerWrapper(viewController))
+            
+        case (.uikit, .uiKit(let viewController)):
+            // UIKit strategy with UIKit view controller - use directly
+            return viewController
+            
+        case (.uikit, .swiftUI(let view)):
+            // UIKit strategy with SwiftUI view - wrap in UIHostingController
+            return UIHostingController(rootView: view)
+        }
     }
     
-    public func register<T: SwiftUIViewFactory>(_ factory: T, for key: String) {
-        guard !key.isEmpty else {
-            logger.error("Invalid route key: empty string")
-            return
-        }
-        
-        factories[key] = AnyRouteFactory(AnySwiftUIViewFactory(factory))
-        logger.info("Registered SwiftUI view factory for key: \(key)")
-    }
-    
-    public func register<T: UIKitViewControllerFactory>(_ factory: T, for key: String) {
-        guard !key.isEmpty else {
-            logger.error("Invalid route key: empty string")
-            return
-        }
-        
-        factories[key] = AnyRouteFactory(AnyUIKitViewControllerFactory(factory))
-        logger.info("Registered UIKit view controller factory for key: \(key)")
-    }
-    
-    public func register<T: RouteFactory>(_ factory: T, for routeKey: any RouteKey) {
+    /// Register a view factory
+    public func register<T: ViewFactory>(_ factory: T, for routeKey: any RouteKey) {
         guard !routeKey.key.isEmpty else {
             logger.error("Invalid route key: empty string")
             return
         }
         
-        // Check if factory is compatible with active strategy
-        guard isFactoryCompatibleWithActiveStrategy(factory) else {
-            logger.warning("Factory for route '\(routeKey.key)' is not compatible with active strategy (\(activeStrategyType)). Skipping registration.")
-            return
-        }
-        
-        factories[routeKey.key] = AnyRouteFactory(factory)
-        logger.info("Registered route factory for key: \(routeKey.key) with type: \(routeKey.presentationType)")
+        factories[routeKey.key] = AnyViewFactory(factory)
+        logger.info("Registered view factory for key: \(routeKey.key)")
     }
     
     public func registerRoutes(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler) {
@@ -152,10 +141,15 @@ public class NavigationManager: NavigationManagerProtocol {
             tabId: tab
         )
         
-        // Use the factory to present the component
-        // The factory handles both building and presenting
-        factory.present(Any.self as Any, with: context)
-        activeStrategy.navigate(to: destination, with: "Built component for \(key)", in: tab)
+        // Create the view component using the factory
+        let component = factory.createView(with: context)
+        logger.info("Created view component for: \(key)")
+        
+        // Automatically wrap the component based on the active strategy
+        let wrappedComponent = wrapComponentForStrategy(component)
+        
+        // Present the wrapped component using the active strategy
+        activeStrategy.navigate(to: destination, with: wrappedComponent, in: tab)
         updateNavigationState(destination: destination)
         saveState()
         logger.info("Successfully navigated to: \(key)")
@@ -182,10 +176,15 @@ public class NavigationManager: NavigationManagerProtocol {
             tabId: tab
         )
         
-        // Use the factory to present the component
-        // The factory handles both building and presenting
-        factory.present(Any.self as Any, with: context)
-        activeStrategy.navigate(to: destination, with: "Built component for \(key)", in: tab)
+        // Create the view component using the factory
+        let component = factory.createView(with: context)
+        logger.info("Created view component for: \(key)")
+        
+        // Automatically wrap the component based on the active strategy
+        let wrappedComponent = wrapComponentForStrategy(component)
+        
+        // Present the wrapped component using the active strategy
+        activeStrategy.navigate(to: destination, with: wrappedComponent, in: tab)
         updateNavigationState(destination: destination)
         saveState()
         logger.info("Successfully navigated to: \(key) with type: \(type)")
@@ -338,21 +337,6 @@ public class NavigationManager: NavigationManagerProtocol {
         return activeStrategy.strategyType.rawValue.capitalized
     }
     
-    /// Check if a factory is compatible with the active strategy
-    private func isFactoryCompatibleWithActiveStrategy<T: RouteFactory>(_ factory: T) -> Bool {
-        // Check if the factory is a SwiftUI factory and we're using SwiftUI strategy
-        if factory is any SwiftUIViewFactory {
-            return activeStrategy is SwiftUINavigationStrategy
-        }
-        
-        // Check if the factory is a UIKit factory and we're using UIKit strategy
-        if factory is any UIKitViewControllerFactory {
-            return activeStrategy is UIKitNavigationStrategy
-        }
-        
-        // If it's neither, it's not compatible
-        return false
-    }
     
     // MARK: - Modal Dismissal Internal Methods
     

@@ -10,23 +10,23 @@ public class AdminRouteHandler: BaseRouteRegistrationHandler {
         super.init()
     }
     
-    public override func canHandle(routeID: RouteID) -> Bool {
+    public override func canHandle(routeKey: any RouteKey) -> Bool {
         // Handle admin routes
-        return routeID.key.hasPrefix("admin_")
+        return routeKey.key.hasPrefix("admin_")
     }
     
     @MainActor
-    public override func registerRoute(for routeID: RouteID, in manager: any NavigationManagerProtocol) -> Bool {
+    public override func registerRoute(for routeKey: any RouteKey, in manager: any NavigationManagerProtocol) -> Bool {
         // Check if current strategy supports admin routes
         let supportedTypes: Set<NavigationType> = [.push, .sheet, .fullScreen, .modal]
-        guard supportedTypes.contains(routeID.presentationType) else {
-            print("⚠️ AdminRouteHandler: Strategy does not support \(routeID.presentationType)")
+        guard supportedTypes.contains(routeKey.presentationType) else {
+            print("⚠️ AdminRouteHandler: Strategy does not support \(routeKey.presentationType)")
             return false
         }
         
         // This handler is generic and doesn't register specific views
         // Specific admin view registration should be done in the app layer
-        print("✅ AdminRouteHandler: Can handle admin route: \(routeID.key)")
+        print("✅ AdminRouteHandler: Can handle admin route: \(routeKey.key)")
         return true
     }
 }

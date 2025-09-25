@@ -32,19 +32,16 @@ struct RRNavigationDemoApp: App {
         print("🚀 Setting up routes with Strategy Validation...")
         print("=============================================")
         
-        // Register SwiftUI view factories using RouteKey definitions (should succeed with SwiftUI strategy)
-        print("\n📱 Registering SwiftUI factories using RouteKey definitions:")
+        // Register simple factories using RouteKey definitions
+        print("\n📱 Registering simple factories using RouteKey definitions:")
         print("🎯 Registering HomeViewFactory for key: \(RouteID.home.key)")
         manager.register(HomeViewFactory(), for: RouteID.home)
         print("🎯 Registering ProfileViewFactory for key: \(RouteID.profile.key)")
         manager.register(ProfileViewFactory(), for: RouteID.profile)
         print("🎯 Registering SettingsViewFactory for key: \(RouteID.settings.key)")
         manager.register(SettingsViewFactory(), for: RouteID.settings)
-        
-        // Register UIKit view controller factories using RouteKey definitions (should be rejected with SwiftUI strategy)
-        print("\n📱 Registering UIKit factories using RouteKey definitions (will be rejected by SwiftUI strategy):")
-        manager.register(AnyUIKitViewControllerFactory(ProfileViewControllerFactory()), for: RouteID.profileVC)
-        manager.register(AnyUIKitViewControllerFactory(SettingsViewControllerFactory()), for: RouteID.settingsVC)
+        print("🎯 Registering AboutViewFactory for key: \(RouteID.about.key)")
+        manager.register(AboutViewFactory(), for: RouteID.about)
         
         // Demonstrate Chain of Responsibility with decoupled NavigationManager
         print("\n🔗 Testing Chain of Responsibility with decoupled NavigationManager:")

@@ -51,7 +51,7 @@ struct HomeView: View {
                         color: .orange
                     ) {
                         navigationManager.navigate(
-                            to: .profileVC.key,
+                            to: RouteID.profileVC.key,
                             parameters: RouteParameters(data: ["demo": "true"]),
                             in: nil,
                             type: .modal

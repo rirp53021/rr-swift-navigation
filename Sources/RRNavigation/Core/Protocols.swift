@@ -9,9 +9,9 @@ import Combine
 public protocol NavigationManagerProtocol: ObservableObject {
     var currentState: NavigationState { get }
     
-    // Original registration methods
+    // Registration methods
     @MainActor
-    func register<T: RouteFactory>(_ factory: T, for routeKey: any RouteKey)
+    func register<T: ViewFactory>(_ factory: T, for routeKey: any RouteKey)
     
     // Chain of Responsibility registration methods
     func registerRoutes(_ routeKeys: [any RouteKey], using chain: RouteRegistrationHandler)
@@ -60,22 +60,17 @@ public protocol RouteFactory {
     func present(_ component: Output, with context: RouteContext)
 }
 
-/// SwiftUI view factory protocol
-public protocol SwiftUIViewFactory: RouteFactory where Output: View {
-    func presentView(_ view: AnyView, with context: RouteContext)
+/// View component enum that can represent either SwiftUI or UIKit views
+public enum ViewComponent {
+    case swiftUI(AnyView)
+    case uiKit(UIViewController)
 }
 
-/// UIKit view controller factory protocol
-#if canImport(UIKit)
-public protocol UIKitViewControllerFactory: RouteFactory where Output: UIViewController {
-    func presentViewController(_ viewController: UIViewController, with context: RouteContext)
+/// Simple factory protocol that creates view components
+public protocol ViewFactory {
+    /// Create a view component with the given context
+    func createView(with context: RouteContext) -> ViewComponent
 }
-#else
-public protocol UIKitViewControllerFactory: RouteFactory {
-    associatedtype Output
-    func presentViewController(_ viewController: Any, with context: RouteContext)
-}
-#endif
 
 /// Navigation state persistence protocol
 public protocol NavigationStatePersistence {

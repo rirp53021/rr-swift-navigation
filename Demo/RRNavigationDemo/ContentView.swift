@@ -133,7 +133,7 @@ struct NavigationTestView: View {
                     Divider()
                     
                     // UIKit Navigation Tests
-                    Group {
+                    VStack {
                         Text("UIKit Navigation (Will Fail)")
                             .font(.headline)
                         
@@ -145,7 +145,7 @@ struct NavigationTestView: View {
                         
                         Button("Navigate to Profile VC (Push)") {
                             navigationManager.navigate(
-                                to: .profileVC,
+                                to: RouteID.profileVC,
                                 parameters: RouteParameters(data: ["userId": "789", "name": "UIKit User"])
                             )
                         }
@@ -153,7 +153,7 @@ struct NavigationTestView: View {
                         
                         Button("Show Settings VC (Sheet)") {
                             navigationManager.navigate(
-                                to: .settingsVC,
+                                to: RouteID.settingsVC,
                                 parameters: RouteParameters(data: ["mode": "advanced"])
                             )
                         }

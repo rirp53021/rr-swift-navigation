@@ -75,7 +75,7 @@ struct ChainHomeView: View {
                         color: .green
                     ) {
                         navigationManager.navigate(
-                            to: .profile,
+                            to: RouteID.profile,
                             parameters: RouteParameters(data: [
                                 "userId": "123",
                                 "userName": "Chain Demo User"
@@ -90,7 +90,7 @@ struct ChainHomeView: View {
                         color: .orange
                     ) {
                         navigationManager.navigate(
-                            to: .settings,
+                            to: RouteID.settings,
                             parameters: RouteParameters(data: [
                                 "theme": "dark",
                                 "notifications": "true"
