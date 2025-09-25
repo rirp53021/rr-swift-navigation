@@ -53,7 +53,7 @@ extension RouteID {
     // MARK: - Helper Methods
     
     /// Get all available routes
-    static var allRoutes: [any RouteKey] {
+    static var allRoutes: [RouteID] {
         return [
             home, profile, settings, about,
             profileVC, settingsVC,
@@ -63,22 +63,22 @@ extension RouteID {
     }
     
     /// Get SwiftUI routes only
-    static var swiftUIRoutes: [any RouteKey] {
+    static var swiftUIRoutes: [RouteID] {
         return [home, profile, settings, about]
     }
     
     /// Get UIKit routes only
-    static var uiKitRoutes: [any RouteKey] {
+    static var uiKitRoutes: [RouteID] {
         return [profileVC, settingsVC]
     }
     
     /// Get admin routes only
-    static var adminRoutes: [any RouteKey] {
+    static var adminRoutes: [RouteID] {
         return [adminDashboard, adminUsers, adminAnalytics]
     }
     
     /// Get deep link routes only
-    static var deepLinkRoutes: [any RouteKey] {
+    static var deepLinkRoutes: [RouteID] {
         return [productDeepLink, categoryDeepLink, userDeepLink]
     }
 }

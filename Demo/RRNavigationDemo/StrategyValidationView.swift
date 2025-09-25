@@ -151,25 +151,25 @@ struct StrategyValidationView: View {
             let swiftUIResult = ValidationResult(
                 factoryType: "SwiftUIViewFactory",
                 strategy: "SwiftUI",
-                key: AppRoutes.home.key,
+                key: RouteID.home.key,
                 success: true,
                 message: "✅ SwiftUI factory accepted by SwiftUI strategy"
             )
             validationResults.append(swiftUIResult)
-            manager.register(swiftUIFactory, for: AppRoutes.home)
+            manager.register(swiftUIFactory, for: .home)
             
             // Test UIKit factory (should fail)
             #if canImport(UIKit)
-            let uikitFactory = ProfileViewControllerFactory(navigationManager: navigationManager)
+            let uikitFactory = ProfileViewControllerFactory()
             let uikitResult = ValidationResult(
                 factoryType: "UIKitViewControllerFactory",
                 strategy: "SwiftUI",
-                key: AppRoutes.profileVC.key,
+                key: RouteID.profileVC.key,
                 success: false,
                 message: "❌ UIKit factory rejected by SwiftUI strategy"
             )
             validationResults.append(uikitResult)
-            manager.register(uikitFactory, for: AppRoutes.profileVC)
+            manager.register(uikitFactory, for: .profileVC)
             #endif
             
             isRunningTests = false
@@ -186,28 +186,28 @@ struct StrategyValidationView: View {
             currentStrategy = "UIKit"
             
             // Test UIKit factory (should succeed)
-            let uikitFactory = ProfileViewControllerFactory(navigationManager: navigationManager)
+            let uikitFactory = ProfileViewControllerFactory()
             let uikitResult = ValidationResult(
                 factoryType: "UIKitViewControllerFactory",
                 strategy: "UIKit",
-                key: AppRoutes.profileVC.key,
+                key: RouteID.profileVC.key,
                 success: true,
                 message: "✅ UIKit factory accepted by UIKit strategy"
             )
             validationResults.append(uikitResult)
-            manager.register(uikitFactory, for: AppRoutes.profileVC)
+            manager.register(uikitFactory, for: .profileVC)
             
             // Test SwiftUI factory (should fail)
             let swiftUIFactory = HomeViewFactory()
             let swiftUIResult = ValidationResult(
                 factoryType: "SwiftUIViewFactory",
                 strategy: "UIKit",
-                key: AppRoutes.home.key,
+                key: RouteID.home.key,
                 success: false,
                 message: "❌ SwiftUI factory rejected by UIKit strategy"
             )
             validationResults.append(swiftUIResult)
-            manager.register(swiftUIFactory, for: AppRoutes.home)
+            manager.register(swiftUIFactory, for: .home)
             
             isRunningTests = false
         }
@@ -232,8 +232,6 @@ struct StrategyValidationView: View {
             
             // Build chain of responsibility
             let chain = RouteRegistrationChainBuilder()
-                .addHandler(SwiftUIRouteHandler())
-                .addHandler(UIKitRouteHandler())
                 .addHandler(AdminRouteHandler())
                 .addHandler(DeepLinkRouteHandler())
                 .build()
@@ -244,7 +242,7 @@ struct StrategyValidationView: View {
             }
             
             // Register routes using chain with app-defined route keys
-            manager.registerRoutes(AppRoutes.allRoutes, using: chain)
+            manager.registerRoutes(RouteID.allRoutes, using: chain)
             
             // Add results based on what should happen
             validationResults.append(ValidationResult(

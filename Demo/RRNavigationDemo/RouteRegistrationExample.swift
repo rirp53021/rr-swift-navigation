@@ -104,7 +104,7 @@ struct RouteRegistrationExample: View {
                             code: """
 // This method logs success/failure counts internally
 navigationManager.registerRoutes(
-    AppRoutes.allRoutes, 
+    .allRoutes, 
     using: chain
 )
 """
@@ -115,7 +115,7 @@ navigationManager.registerRoutes(
                             code: """
 // This method returns detailed results
 let results = navigationManager.registerRoutesWithResults(
-    AppRoutes.allRoutes, 
+    .allRoutes, 
     using: chain
 )
 
@@ -135,7 +135,7 @@ for (key, success) in results {
                             code: """
 // Register a single route and handle the result
 let success = navigationManager.registerRoute(
-    AppRoutes.home, 
+    .home, 
     using: chain
 )
 
@@ -173,7 +173,7 @@ if success {
             return
         }
         
-        navigationManager.registerRoutes(AppRoutes.allRoutes, using: chain)
+        navigationManager.registerRoutes(RouteID.allRoutes, using: chain)
     }
     
     private func registerRoutesDetailed() {
@@ -183,7 +183,7 @@ if success {
             return
         }
         
-        registrationResults = navigationManager.registerRoutesWithResults(AppRoutes.allRoutes, using: chain)
+        registrationResults = navigationManager.registerRoutesWithResults(RouteID.allRoutes, using: chain)
         showResults = true
     }
 }

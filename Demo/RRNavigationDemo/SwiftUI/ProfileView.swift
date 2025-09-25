@@ -35,7 +35,7 @@ struct ProfileView: View {
             VStack(spacing: 16) {
                 Button("Edit Profile") {
                     navigationManager.navigate(
-                        to: "settings",
+                        to: RouteID.settings.key,
                         parameters: RouteParameters(data: ["section": "profile", "userId": userId]),
                         in: nil
                     )
@@ -44,7 +44,7 @@ struct ProfileView: View {
                 
                 Button("View Settings") {
                     navigationManager.navigate(
-                        to: "settings",
+                        to: RouteID.settings.key,
                         parameters: RouteParameters(data: ["userId": userId]),
                         in: nil,
                         type: .sheet

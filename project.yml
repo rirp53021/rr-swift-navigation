@@ -12,7 +12,16 @@ options:
   groupSortPosition: top
   defaultScheme: RRNavigation
 
-# Self-contained framework - no external packages needed
+packages:
+  RRFoundation:
+    url: https://github.com/rirp53021/rr-swift-foundation.git
+    from: 1.9.0
+    generateScheme: false
+  
+  RRPersistence:
+    url: https://github.com/rirp53021/rr-swift-persistence.git
+    from: 1.1.0
+    generateScheme: false
 
 settings:
   SWIFT_VERSION: "5.9"
@@ -29,7 +38,9 @@ targets:
     deploymentTarget: "15.0"
     sources:
       - path: Sources/RRNavigation
-    dependencies: []
+    dependencies:
+      - package: RRFoundation
+      - package: RRPersistence
     settings:
       PRODUCT_NAME: RRNavigation
       PRODUCT_BUNDLE_IDENTIFIER: com.rrnavigation.core

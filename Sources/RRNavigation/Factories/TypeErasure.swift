@@ -25,10 +25,14 @@ public class AnySwiftUIViewFactory: SwiftUIViewFactory {
     public typealias Output = AnyView
     
     private let _presentView: (AnyView, RouteContext) -> Void
+    private let _createView: (RouteContext) -> AnyView
     
     public init<T: SwiftUIViewFactory>(_ factory: T) {
         self._presentView = { view, context in
             factory.presentView(view, with: context)
+        }
+        self._createView = { context in
+            factory.createView(with: context)
         }
     }
     
@@ -38,6 +42,10 @@ public class AnySwiftUIViewFactory: SwiftUIViewFactory {
     
     public func presentView(_ view: AnyView, with context: RouteContext) {
         _presentView(view, context)
+    }
+    
+    public func createView(with context: RouteContext) -> AnyView {
+        return _createView(context)
     }
 }
 
@@ -91,9 +99,11 @@ public struct SwiftUIViewFactoryHelper<Content: View>: SwiftUIViewFactory {
     public typealias Output = AnyView
     
     private let presenter: (AnyView, RouteContext) -> Void
+    private let viewCreator: (RouteContext) -> AnyView
     
-    public init(_ presenter: @escaping (AnyView, RouteContext) -> Void) {
+    public init(_ presenter: @escaping (AnyView, RouteContext) -> Void, viewCreator: @escaping (RouteContext) -> AnyView) {
         self.presenter = presenter
+        self.viewCreator = viewCreator
     }
     
     public func present(_ component: AnyView, with context: RouteContext) {
@@ -102,6 +112,10 @@ public struct SwiftUIViewFactoryHelper<Content: View>: SwiftUIViewFactory {
     
     public func presentView(_ view: AnyView, with context: RouteContext) {
         presenter(view, context)
+    }
+    
+    public func createView(with context: RouteContext) -> AnyView {
+        return viewCreator(context)
     }
 }
 

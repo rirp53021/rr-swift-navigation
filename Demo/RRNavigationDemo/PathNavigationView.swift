@@ -169,25 +169,25 @@ struct PathNavigationView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         RouteInfoSection(
                             title: "SwiftUI Routes",
-                            routes: AppRoutes.swiftUIRoutes,
+                            routes: .swiftUIRoutes,
                             color: .green
                         )
                         
                         RouteInfoSection(
                             title: "UIKit Routes",
-                            routes: AppRoutes.uiKitRoutes,
+                            routes: .uiKitRoutes,
                             color: .orange
                         )
                         
                         RouteInfoSection(
                             title: "Admin Routes",
-                            routes: AppRoutes.adminRoutes,
+                            routes: .adminRoutes,
                             color: .purple
                         )
                         
                         RouteInfoSection(
                             title: "Deep Link Routes",
-                            routes: AppRoutes.deepLinkRoutes,
+                            routes: .deepLinkRoutes,
                             color: .blue
                         )
                     }
@@ -204,13 +204,13 @@ struct PathNavigationView: View {
     
     // MARK: - Computed Properties
     
-    private var availableRoutes: [any RouteKey] {
-        return AppRoutes.allRoutes
+    private var availableRoutes: [RouteID] {
+        return RouteID.allRoutes
     }
     
     // MARK: - Navigation Methods
     
-    private func navigateToRoute(_ route: any RouteKey) {
+    private func navigateToRoute(_ route: RouteID) {
         let parameters = RouteParameters(data: [
             "userId": "path_user_123",
             "timestamp": "\(Date().timeIntervalSince1970)",

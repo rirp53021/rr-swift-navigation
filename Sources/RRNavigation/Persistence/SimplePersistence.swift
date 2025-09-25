@@ -2,7 +2,7 @@
 // Licensed under the MIT License
 
 import Foundation
-
+import RRFoundation
 // MARK: - Simple Persistence Implementations
 
 /// Simple in-memory persistence implementation for testing and development

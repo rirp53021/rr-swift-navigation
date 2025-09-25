@@ -1,6 +1,7 @@
 // MARK: - UIKit Navigation Strategy
 
 import Foundation
+import RRFoundation
 #if canImport(UIKit)
 import UIKit
 #endif

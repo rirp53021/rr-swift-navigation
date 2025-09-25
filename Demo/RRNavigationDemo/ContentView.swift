@@ -3,6 +3,7 @@ import RRNavigation
 
 struct ContentView: View {
     @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
     @State private var selectedTab = 0
     
     var body: some View {
@@ -57,6 +58,15 @@ struct ContentView: View {
                 .tag(6)
         }
         .environmentObject(navigationManager)
+        .overlay(
+            NavigationPresenter(coordinator: navigationCoordinator)
+        )
+        .onAppear {
+            // Set up the navigation coordinator with the strategy
+            if let strategy = navigationManager.activeStrategy as? SwiftUINavigationStrategy {
+                strategy.setNavigationCoordinator(navigationCoordinator)
+            }
+        }
     }
 }
 
@@ -135,7 +145,7 @@ struct NavigationTestView: View {
                         
                         Button("Navigate to Profile VC (Push)") {
                             navigationManager.navigate(
-                                to: AppRoutes.profileVC,
+                                to: .profileVC,
                                 parameters: RouteParameters(data: ["userId": "789", "name": "UIKit User"])
                             )
                         }
@@ -143,7 +153,7 @@ struct NavigationTestView: View {
                         
                         Button("Show Settings VC (Sheet)") {
                             navigationManager.navigate(
-                                to: AppRoutes.settingsVC,
+                                to: .settingsVC,
                                 parameters: RouteParameters(data: ["mode": "advanced"])
                             )
                         }

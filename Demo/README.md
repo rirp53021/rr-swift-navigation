@@ -177,8 +177,8 @@ manager.register(ProfileViewControllerFactory(), for: AppRoutes.profileVC)
 
 // Chain of Responsibility with decoupled NavigationManager
 let chain = RouteRegistrationChainBuilder()
-    .addHandler(SwiftUIRouteHandler())
-    .addHandler(UIKitRouteHandler())
+    .addHandler(AdminRouteHandler())
+    .addHandler(DeepLinkRouteHandler())
     .build()
 
 // Pass route keys from your app, not hardcoded in NavigationManager

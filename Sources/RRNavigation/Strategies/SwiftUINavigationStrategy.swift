@@ -2,6 +2,18 @@
 
 import Foundation
 import SwiftUI
+import RRFoundation
+
+/// Protocol for coordinating SwiftUI navigation presentation
+public protocol SwiftUINavigationCoordinator: AnyObject {
+    func presentSheet(_ view: AnyView)
+    func presentFullScreen(_ view: AnyView)
+    func presentModal(_ view: AnyView)
+    func dismissSheet()
+    func dismissFullScreen()
+    func dismissModal()
+    func dismissAll()
+}
 
 @MainActor
 public class SwiftUINavigationStrategy: NavigationStrategy {
@@ -13,9 +25,20 @@ public class SwiftUINavigationStrategy: NavigationStrategy {
     private var sheetPresentations: [String: Bool] = [:]
     private var fullScreenPresentations: [String: Bool] = [:]
     
+    // Navigation coordinator for actual view presentation
+    private weak var navigationCoordinator: SwiftUINavigationCoordinator?
+    
     public init() {}
     
+    public func setNavigationCoordinator(_ coordinator: SwiftUINavigationCoordinator) {
+        self.navigationCoordinator = coordinator
+    }
+    
     public func navigate(to destination: NavigationDestination, with component: Any, in tab: String?) {
+        print("🎯 SwiftUINavigationStrategy: navigate called for \(destination.key)")
+        print("🎯 SwiftUINavigationStrategy: coordinator = \(navigationCoordinator != nil ? "available" : "nil")")
+        print("🎯 SwiftUINavigationStrategy: component type = \(type(of: component))")
+        
         switch destination.navigationType {
         case .push:
             navigatePush(destination, with: component, in: tab)
@@ -100,19 +123,43 @@ public class SwiftUINavigationStrategy: NavigationStrategy {
     private func navigateSheet(_ destination: NavigationDestination, with component: Any, in tab: String?) {
         let tabId = tab ?? "main"
         sheetPresentations[tabId] = true
-        // The component is the built SwiftUI view from the factory
+        
+        print("🎯 SwiftUINavigationStrategy: navigateSheet called for \(destination.key)")
+        print("🎯 SwiftUINavigationStrategy: coordinator = \(navigationCoordinator != nil ? "available" : "nil")")
+        print("🎯 SwiftUINavigationStrategy: component type = \(type(of: component))")
+        
+        // Present the view through the navigation coordinator
+        if let coordinator = navigationCoordinator,
+           let view = component as? AnyView {
+            print("🎯 SwiftUINavigationStrategy: calling coordinator.presentSheet")
+            coordinator.presentSheet(view)
+        } else {
+            print("🎯 SwiftUINavigationStrategy: coordinator or view is nil")
+        }
+        
         Logger.shared.info("SwiftUI sheet presentation for: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
     
     private func navigateFullScreen(_ destination: NavigationDestination, with component: Any, in tab: String?) {
         let tabId = tab ?? "main"
         fullScreenPresentations[tabId] = true
-        // The component is the built SwiftUI view from the factory
+        
+        // Present the view through the navigation coordinator
+        if let coordinator = navigationCoordinator,
+           let view = component as? AnyView {
+            coordinator.presentFullScreen(view)
+        }
+        
         Logger.shared.info("SwiftUI fullscreen presentation for: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
     
     private func navigateModal(_ destination: NavigationDestination, with component: Any, in tab: String?) {
-        // The component is the built SwiftUI view from the factory
+        // Present the view through the navigation coordinator
+        if let coordinator = navigationCoordinator,
+           let view = component as? AnyView {
+            coordinator.presentModal(view)
+        }
+        
         Logger.shared.info("SwiftUI modal presentation for: \(destination.key) with component: \(type(of: component))")
     }
     

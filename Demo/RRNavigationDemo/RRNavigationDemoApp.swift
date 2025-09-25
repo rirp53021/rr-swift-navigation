@@ -4,6 +4,7 @@ import RRNavigation
 @main
 struct RRNavigationDemoApp: App {
     @StateObject private var navigationManager: NavigationManager
+    @StateObject private var navigationCoordinator: NavigationCoordinator
     
     init() {
         // Create navigation manager with SwiftUI strategy
@@ -11,6 +12,9 @@ struct RRNavigationDemoApp: App {
             persistence: InMemoryPersistence()
         )
         _navigationManager = StateObject(wrappedValue: manager as! NavigationManager)
+        
+        // Create navigation coordinator
+        _navigationCoordinator = StateObject(wrappedValue: NavigationCoordinator(navigationManager: manager))
         
         // Register routes
         setupRoutes(manager: manager)
@@ -20,6 +24,7 @@ struct RRNavigationDemoApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(navigationManager)
+                .environmentObject(navigationCoordinator)
         }
     }
     
@@ -29,35 +34,30 @@ struct RRNavigationDemoApp: App {
         
         // Register SwiftUI view factories using RouteKey definitions (should succeed with SwiftUI strategy)
         print("\n📱 Registering SwiftUI factories using RouteKey definitions:")
-        manager.register(HomeViewFactory(), for: AppRoutes.home)
-        manager.register(ProfileViewFactory(), for: AppRoutes.profile)
-        manager.register(SettingsViewFactory(), for: AppRoutes.settings)
+        print("🎯 Registering HomeViewFactory for key: \(RouteID.home.key)")
+        manager.register(HomeViewFactory(), for: RouteID.home)
+        print("🎯 Registering ProfileViewFactory for key: \(RouteID.profile.key)")
+        manager.register(ProfileViewFactory(), for: RouteID.profile)
+        print("🎯 Registering SettingsViewFactory for key: \(RouteID.settings.key)")
+        manager.register(SettingsViewFactory(), for: RouteID.settings)
         
         // Register UIKit view controller factories using RouteKey definitions (should be rejected with SwiftUI strategy)
         print("\n📱 Registering UIKit factories using RouteKey definitions (will be rejected by SwiftUI strategy):")
-        manager.register(AnyUIKitViewControllerFactory(ProfileViewControllerFactory(navigationManager: manager)), for: AppRoutes.profileVC)
-        manager.register(AnyUIKitViewControllerFactory(SettingsViewControllerFactory(navigationManager: manager)), for: AppRoutes.settingsVC)
+        manager.register(AnyUIKitViewControllerFactory(ProfileViewControllerFactory()), for: RouteID.profileVC)
+        manager.register(AnyUIKitViewControllerFactory(SettingsViewControllerFactory()), for: RouteID.settingsVC)
         
         // Demonstrate Chain of Responsibility with decoupled NavigationManager
         print("\n🔗 Testing Chain of Responsibility with decoupled NavigationManager:")
         let chain = RouteRegistrationChainBuilder()
-            .addHandler(SwiftUIRouteHandler())
-            .addHandler(UIKitRouteHandler())
             .addHandler(AdminRouteHandler())
             .addHandler(DeepLinkRouteHandler())
             .build()
         
         guard let chain = chain else {
-            print("❌ Failed to build chain")
             return
         }
         
         // Pass route keys from the app, not hardcoded in NavigationManager
-        manager.registerRoutes(AppRoutes.allRoutes, using: chain)
-        
-        print("\n✅ Route registration completed! Check logs above for validation results.")
-        print("💡 Only SwiftUI factories were accepted due to active SwiftUI strategy.")
-        print("🔑 Using centralized RouteKey definitions for type-safe navigation.")
-        print("🏗️ NavigationManager is now decoupled and reusable!")
+        manager.registerRoutes(RouteID.allRoutes, using: chain)
     }
 }

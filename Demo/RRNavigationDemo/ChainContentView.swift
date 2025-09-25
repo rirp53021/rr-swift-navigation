@@ -65,7 +65,7 @@ struct ChainHomeView: View {
                         icon: "building.2.fill",
                         color: .blue
                     ) {
-                        navigationManager.navigate(to: AppRoutes.about)
+                        navigationManager.navigate(to: RouteID.about.key)
                     }
                     
                     NavigationCard<AnyView>(
@@ -75,7 +75,7 @@ struct ChainHomeView: View {
                         color: .green
                     ) {
                         navigationManager.navigate(
-                            to: AppRoutes.profile,
+                            to: .profile,
                             parameters: RouteParameters(data: [
                                 "userId": "123",
                                 "userName": "Chain Demo User"
@@ -90,7 +90,7 @@ struct ChainHomeView: View {
                         color: .orange
                     ) {
                         navigationManager.navigate(
-                            to: AppRoutes.settings,
+                            to: .settings,
                             parameters: RouteParameters(data: [
                                 "theme": "dark",
                                 "notifications": "true"
@@ -125,13 +125,13 @@ struct ChainNavigationTestView: View {
                         
                         RouteTestCard(
                             title: "Home",
-                            route: AppRoutes.home,
+                            route: RouteID.home,
                             parameters: nil
                         )
                         
                         RouteTestCard(
                             title: "Profile",
-                            route: AppRoutes.profile,
+                            route: RouteID.profile,
                             parameters: RouteParameters(data: [
                                 "userId": "456",
                                 "userName": "Test User"
@@ -140,7 +140,7 @@ struct ChainNavigationTestView: View {
                         
                         RouteTestCard(
                             title: "Settings",
-                            route: AppRoutes.settings,
+                            route: .settings,
                             parameters: RouteParameters(data: [
                                 "theme": "light",
                                 "notifications": "false"
@@ -149,7 +149,7 @@ struct ChainNavigationTestView: View {
                         
                         RouteTestCard(
                             title: "About",
-                            route: AppRoutes.about,
+                            route: .about,
                             parameters: nil
                         )
                     }
@@ -159,7 +159,7 @@ struct ChainNavigationTestView: View {
                         
                         RouteTestCard(
                             title: "Profile VC",
-                            route: AppRoutes.profileVC,
+                            route: .profileVC,
                             parameters: RouteParameters(data: [
                                 "userId": "789",
                                 "userName": "UIKit User"
@@ -168,7 +168,7 @@ struct ChainNavigationTestView: View {
                         
                         RouteTestCard(
                             title: "Settings VC",
-                            route: AppRoutes.settingsVC,
+                            route: .settingsVC,
                             parameters: RouteParameters(data: [
                                 "theme": "dark",
                                 "notifications": "true"
@@ -202,19 +202,19 @@ struct ChainAdminView: View {
                 VStack(spacing: 15) {
                     RouteTestCard(
                         title: "Dashboard",
-                        route: AppRoutes.adminDashboard,
+                        route: RouteID.adminDashboard,
                         parameters: nil
                     )
                     
                     RouteTestCard(
                         title: "User Management",
-                        route: AppRoutes.adminUsers,
+                        route: RouteID.adminUsers,
                         parameters: nil
                     )
                     
                     RouteTestCard(
                         title: "Analytics",
-                        route: AppRoutes.adminAnalytics,
+                        route: .adminAnalytics,
                         parameters: RouteParameters(data: [
                             "dateRange": "30days",
                             "includeDetails": "true"
@@ -249,7 +249,7 @@ struct ChainDeepLinkView: View {
                 VStack(spacing: 15) {
                     RouteTestCard(
                         title: "Product Link",
-                        route: AppRoutes.productDeepLink,
+                        route: RouteID.productDeepLink,
                         parameters: RouteParameters(data: [
                             "productId": "abc123",
                             "category": "electronics"
@@ -258,7 +258,7 @@ struct ChainDeepLinkView: View {
                     
                     RouteTestCard(
                         title: "Category Link",
-                        route: AppRoutes.categoryDeepLink,
+                        route: RouteID.categoryDeepLink,
                         parameters: RouteParameters(data: [
                             "categoryId": "cat456",
                             "subcategory": "smartphones"
@@ -267,7 +267,7 @@ struct ChainDeepLinkView: View {
                     
                     RouteTestCard(
                         title: "User Link",
-                        route: AppRoutes.userDeepLink,
+                        route: .userDeepLink,
                         parameters: RouteParameters(data: [
                             "userId": "user789",
                             "action": "view_profile"
@@ -288,14 +288,14 @@ struct ChainDeepLinkView: View {
 
 struct RouteTestCard: View {
     let title: String
-    let route: any RouteKey
+    let route: RouteID
     let parameters: RouteParameters?
     
     @EnvironmentObject var navigationManager: NavigationManager
     
     var body: some View {
         Button {
-            navigationManager.navigate(to: route, parameters: parameters)
+            navigationManager.navigate(to: route.key, parameters: parameters)
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
