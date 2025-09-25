@@ -52,9 +52,30 @@ public class SwiftUINavigationStrategy: NavigationStrategy {
     }
     
     public func navigateBack() {
-        // Implementation depends on current navigation context
-        // This would be handled by the SwiftUI view hierarchy
-        Logger.shared.info("SwiftUI navigate back requested")
+        // Check if there are any modal presentations to dismiss first
+        if !sheetPresentations.isEmpty || !fullScreenPresentations.isEmpty {
+            // Dismiss the topmost modal presentation
+            let activeSheets = sheetPresentations.filter { $0.value == true }
+            let activeFullScreens = fullScreenPresentations.filter { $0.value == true }
+            
+            if let lastSheet = activeSheets.keys.first {
+                Logger.shared.info("Dismissing sheet: \(lastSheet)")
+                navigationCoordinator?.dismissSheet()
+                sheetPresentations[lastSheet] = false
+            } else if let lastFullScreen = activeFullScreens.keys.first {
+                Logger.shared.info("Dismissing full screen: \(lastFullScreen)")
+                navigationCoordinator?.dismissFullScreen()
+                fullScreenPresentations[lastFullScreen] = false
+            } else {
+                Logger.shared.info("Dismissing any modal presentation")
+                navigationCoordinator?.dismissModal()
+            }
+        } else {
+            // No modals to dismiss, handle push navigation
+            // In SwiftUI, this would typically be handled by the NavigationStack
+            // The actual back navigation is managed by SwiftUI's built-in navigation
+            Logger.shared.info("SwiftUI push navigation back - handled by NavigationStack")
+        }
     }
     
     public func navigateToRoot(in tab: String?) {

@@ -42,11 +42,26 @@ public class UIKitNavigationStrategy: NavigationStrategy {
     
     public func navigateBack() {
         #if canImport(UIKit)
-        if let currentNavController = getCurrentNavigationController() {
-            currentNavController.popViewController(animated: true)
-            Logger.shared.info("UIKit navigate back executed")
+        // Check if there are any presented view controllers to dismiss first
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootViewController = windowScene.windows.first?.rootViewController,
+           let presentedVC = rootViewController.presentedViewController {
+            
+            // Dismiss the presented view controller (sheet, fullscreen, modal)
+            Logger.shared.info("Dismissing presented view controller: \(type(of: presentedVC))")
+            presentedVC.dismiss(animated: true) {
+                Logger.shared.info("Presented view controller dismissed successfully")
+            }
+        } else if let currentNavController = getCurrentNavigationController() {
+            // Check if we can pop a view controller
+            if currentNavController.viewControllers.count > 1 {
+                Logger.shared.info("Popping view controller from navigation stack")
+                currentNavController.popViewController(animated: true)
+            } else {
+                Logger.shared.warning("Cannot pop - only one view controller in navigation stack")
+            }
         } else {
-            Logger.shared.error("No navigation controller available")
+            Logger.shared.error("No navigation controller available for back navigation")
         }
         #else
         Logger.shared.info("UIKit navigate back requested (not available on this platform)")

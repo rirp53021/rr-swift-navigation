@@ -11,7 +11,7 @@ struct NavigateBackDemoView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            Text("Test different navigation back behaviors")
+            Text("Test strategy-based navigation back behaviors")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
@@ -67,8 +67,8 @@ struct NavigateBackDemoView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 
-                Button("Navigate Back (Specific Type)") {
-                    navigationManager.navigateBack(for: selectedNavigationType)
+                Button("Navigate Back (Strategy-based)") {
+                    navigationManager.navigateBack()
                 }
                 .buttonStyle(.bordered)
                 
