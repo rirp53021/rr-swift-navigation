@@ -36,33 +36,40 @@ struct ContentView: View {
                 }
                 .tag(3)
             
+            ForceBackDemoView()
+                .tabItem {
+                    Image(systemName: "arrow.left.square.fill")
+                    Text("Force Back")
+                }
+                .tag(4)
+            
             StrategyValidationView()
                 .tabItem {
                     Image(systemName: "checkmark.shield")
                     Text("Strategy")
                 }
-                .tag(3)
+                .tag(5)
             
             PathNavigationView()
                 .tabItem {
                     Image(systemName: "map")
                     Text("Paths")
                 }
-                .tag(4)
+                .tag(6)
             
             ModalDemoView()
                 .tabItem {
                     Image(systemName: "rectangle.stack")
                     Text("Modals")
                 }
-                .tag(5)
+                .tag(7)
             
             RouteRegistrationExample()
                 .tabItem {
                     Image(systemName: "list.bullet.rectangle")
                     Text("Registration")
                 }
-                .tag(6)
+                .tag(8)
         }
         .environmentObject(navigationManager)
         .overlay(

@@ -28,10 +28,18 @@ public class SwiftUINavigationStrategy: NavigationStrategy {
     // Navigation coordinator for actual view presentation
     private weak var navigationCoordinator: SwiftUINavigationCoordinator?
     
+    // Callback for forcing push navigation back
+    private var onForceBackNavigation: (() -> Void)?
+    
     public init() {}
     
     public func setNavigationCoordinator(_ coordinator: SwiftUINavigationCoordinator) {
         self.navigationCoordinator = coordinator
+    }
+    
+    /// Set callback for forcing push navigation back
+    public func setForceBackNavigationCallback(_ callback: @escaping () -> Void) {
+        self.onForceBackNavigation = callback
     }
     
     public func navigate(to destination: NavigationDestination, with component: Any, in tab: String?) {
@@ -71,10 +79,28 @@ public class SwiftUINavigationStrategy: NavigationStrategy {
                 navigationCoordinator?.dismissModal()
             }
         } else {
-            // No modals to dismiss, handle push navigation
-            // In SwiftUI, this would typically be handled by the NavigationStack
-            // The actual back navigation is managed by SwiftUI's built-in navigation
-            Logger.shared.info("SwiftUI push navigation back - handled by NavigationStack")
+            // No modals to dismiss, force push navigation back
+            // This can be triggered by custom back buttons or gestures
+            Logger.shared.info("Forcing SwiftUI push navigation back")
+            forcePushNavigationBack()
+        }
+    }
+    
+    /// Force push navigation back - useful for custom back buttons or gestures
+    public func forcePushNavigationBack() {
+        Logger.shared.info("Forcing push navigation back in SwiftUI")
+        
+        if let callback = onForceBackNavigation {
+            // Use the callback provided by the view
+            Logger.shared.info("Executing force back navigation callback")
+            callback()
+        } else {
+            // Fallback: post a notification that views can observe
+            Logger.shared.info("No callback set, posting force back navigation notification")
+            NotificationCenter.default.post(
+                name: NSNotification.Name("ForceNavigationBack"),
+                object: nil
+            )
         }
     }
     
