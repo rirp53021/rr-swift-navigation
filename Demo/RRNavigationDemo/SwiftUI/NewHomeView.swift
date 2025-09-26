@@ -145,7 +145,7 @@ struct NewHomeView: View {
                             
                             Button("Settings") {
                                 navigationManager.navigate(
-                                    to: RouteID.settings,
+                                    to: RouteID.newSettings,
                                     parameters: RouteParameters(),
                                     in: nil,
                                     type: .sheet

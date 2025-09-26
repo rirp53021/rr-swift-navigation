@@ -103,7 +103,7 @@ struct NewSettingsView: View {
                     
                     Button("Go to Home") {
                         navigationManager.navigate(
-                            to: RouteID.home,
+                            to: RouteID.newHome,
                             parameters: RouteParameters(),
                             in: nil,
                             type: nil

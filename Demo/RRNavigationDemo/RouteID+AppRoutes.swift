@@ -8,9 +8,6 @@ extension RouteID {
     
     // MARK: - SwiftUI Routes
     
-    /// Home screen route
-    static let home = RouteID("home", type: .push)
-    
     /// New Home screen route
     static let newHome = RouteID("newHome", type: .push)
     
@@ -19,15 +16,6 @@ extension RouteID {
     
     /// Nested Navigation screen route
     static let nestedNavigation = RouteID("nestedNavigation", type: .push)
-    
-    /// Profile screen route
-    static let profile = RouteID("profile", type: .push)
-    
-    /// Settings screen route (presented as sheet)
-    static let settings = RouteID("settings", type: .sheet)
-    
-    /// About screen route
-    static let about = RouteID("about", type: .push)
     
     // MARK: - Demo Routes
     
@@ -58,13 +46,6 @@ extension RouteID {
     /// Tab demo
     static let tabDemo = RouteID("tabDemo", type: .tab)
     
-    // MARK: - UIKit Routes
-    
-    /// Profile screen using UIKit view controller
-    static let profileVC = RouteID("profileVC", type: .push)
-    
-    /// Settings screen using UIKit view controller (presented as sheet)
-    static let settingsVC = RouteID("settingsVC", type: .sheet)
     
     // MARK: - Admin Routes
     
@@ -93,9 +74,8 @@ extension RouteID {
     /// Get all available routes
     static var allRoutes: [RouteID] {
         return [
-            home, newHome, newSettings, nestedNavigation, profile, settings, about,
+            newHome, newSettings, nestedNavigation,
             pushDemo, pushA, pushB, pushC, sheetDemo, fullScreenDemo, modalDemo, replaceDemo, tabDemo,
-            profileVC, settingsVC,
             adminDashboard, adminUsers, adminAnalytics,
             productDeepLink, categoryDeepLink, userDeepLink
         ]
@@ -103,12 +83,7 @@ extension RouteID {
     
     /// Get SwiftUI routes only
     static var swiftUIRoutes: [RouteID] {
-        return [home, profile, settings, about]
-    }
-    
-    /// Get UIKit routes only
-    static var uiKitRoutes: [RouteID] {
-        return [profileVC, settingsVC]
+        return [newHome, newSettings, nestedNavigation]
     }
     
     /// Get admin routes only

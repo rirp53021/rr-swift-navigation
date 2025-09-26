@@ -48,10 +48,6 @@ struct RRNavigationDemoApp: App {
         manager.register(ReplaceDemoViewFactory(), for: .replaceDemo)
         manager.register(TabDemoViewFactory(), for: .tabDemo)
         
-        // Original factories
-        manager.register(HomeViewFactory(), for: .home)
-        manager.register(ProfileViewFactory(), for: .profile)
-        manager.register(SettingsViewFactory(), for: .settings)
         
         // Demonstrate Chain of Responsibility with decoupled NavigationManager
         let chain = RouteRegistrationChainBuilder()

@@ -316,7 +316,7 @@ struct NewModalDemoView: View {
                 
                 Button("Go to Home") {
                     navigationManager.navigate(
-                        to: RouteID.home,
+                        to: RouteID.newHome,
                         parameters: RouteParameters(),
                         in: nil,
                         type: nil
@@ -365,7 +365,7 @@ struct ReplaceDemoView: View {
                 
                 Button("Go to Home") {
                     navigationManager.navigate(
-                        to: RouteID.home,
+                        to: RouteID.newHome,
                         parameters: RouteParameters(),
                         in: nil,
                         type: nil
@@ -416,7 +416,7 @@ struct TabDemoView: View {
                 
                 Button("Switch to Home Tab") {
                     navigationManager.navigate(
-                        to: RouteID.home,
+                        to: RouteID.newHome,
                         parameters: RouteParameters(),
                         in: "main",
                         type: .tab
