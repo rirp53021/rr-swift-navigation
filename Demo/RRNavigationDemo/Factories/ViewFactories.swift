@@ -1,17 +1,17 @@
 import SwiftUI
 import RRNavigation
 
-// MARK: - New Settings Factory
-struct NewSettingsViewFactory: ViewFactory {
+// MARK: - Settings Factory
+struct SettingsViewFactory: ViewFactory {
     func createView(with context: RouteContext) -> ViewComponent {
-        .swiftUI(AnyView(NewSettingsView()))
+        .swiftUI(AnyView(SettingsView()))
     }
 }
 
-// MARK: - New Home Factory
-struct NewHomeViewFactory: ViewFactory {
+// MARK: - Home Factory
+struct HomeViewFactory: ViewFactory {
     func createView(with context: RouteContext) -> ViewComponent {
-        .swiftUI(AnyView(NewHomeView()))
+        .swiftUI(AnyView(HomeView()))
     }
 }
 

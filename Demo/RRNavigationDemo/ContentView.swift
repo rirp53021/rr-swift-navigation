@@ -1,7 +1,7 @@
 import SwiftUI
 import RRNavigation
 
-struct NewContentView: View {
+struct ContentView: View {
     @EnvironmentObject var navigationManager: NavigationManager
     @State private var selectedTab = 0
     
@@ -9,7 +9,7 @@ struct NewContentView: View {
         TabView(selection: $selectedTab) {
             // Home Tab
             NavigationView {
-                NewHomeView()
+                HomeView()
             }
             .tabItem {
                 Image(systemName: "house.fill")
@@ -19,7 +19,7 @@ struct NewContentView: View {
             
             // Settings Tab
             NavigationView {
-                NewSettingsView()
+                SettingsView()
             }
             .tabItem {
                 Image(systemName: "gear")
@@ -42,6 +42,6 @@ struct NewContentView: View {
 }
 
 #Preview {
-    NewContentView()
+    ContentView()
         .environmentObject(NavigationManager(strategy: SwiftUINavigationStrategy()))
 }

@@ -5,6 +5,7 @@ import SwiftUI
 import RRFoundation
 
 /// Protocol for coordinating SwiftUI navigation presentation
+@MainActor
 public protocol SwiftUINavigationCoordinator: AnyObject {
     func presentSheet(_ view: AnyView)
     func presentFullScreen(_ view: AnyView)

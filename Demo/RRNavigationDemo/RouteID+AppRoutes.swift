@@ -8,11 +8,11 @@ extension RouteID {
     
     // MARK: - SwiftUI Routes
     
-    /// New Home screen route
-    static let newHome = RouteID("newHome", type: .push)
+    /// Home screen route
+    static let home = RouteID("home", type: .push)
     
-    /// New Settings screen route
-    static let newSettings = RouteID("newSettings", type: .push)
+    /// Settings screen route
+    static let settings = RouteID("settings", type: .push)
     
     /// Nested Navigation screen route
     static let nestedNavigation = RouteID("nestedNavigation", type: .push)
@@ -74,7 +74,7 @@ extension RouteID {
     /// Get all available routes
     static var allRoutes: [RouteID] {
         return [
-            newHome, newSettings, nestedNavigation,
+            home, settings, nestedNavigation,
             pushDemo, pushA, pushB, pushC, sheetDemo, fullScreenDemo, modalDemo, replaceDemo, tabDemo,
             adminDashboard, adminUsers, adminAnalytics,
             productDeepLink, categoryDeepLink, userDeepLink
@@ -83,7 +83,7 @@ extension RouteID {
     
     /// Get SwiftUI routes only
     static var swiftUIRoutes: [RouteID] {
-        return [newHome, newSettings, nestedNavigation]
+        return [home, settings, nestedNavigation]
     }
     
     /// Get admin routes only

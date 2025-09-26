@@ -22,7 +22,7 @@ struct RRNavigationDemoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            NewContentView()
+            ContentView()
                 .environmentObject(navigationManager)
                 .environmentObject(navigationCoordinator)
         }
@@ -32,9 +32,9 @@ struct RRNavigationDemoApp: App {
         
         // Register simple factories using RouteKey definitions
         
-        // New demo app factories
-        manager.register(NewHomeViewFactory(), for: .newHome)
-        manager.register(NewSettingsViewFactory(), for: .newSettings)
+        // Demo app factories
+        manager.register(HomeViewFactory(), for: .home)
+        manager.register(SettingsViewFactory(), for: .settings)
         manager.register(NestedNavigationViewFactory(), for: .nestedNavigation)
         
         // Demo view factories

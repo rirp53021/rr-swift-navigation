@@ -1,7 +1,7 @@
 import SwiftUI
 import RRNavigation
 
-struct NewSettingsView: View {
+struct SettingsView: View {
     @EnvironmentObject var navigationManager: NavigationManager
     @State private var selectedStrategy: NavigationStrategyType = .swiftUI
     @State private var showingStrategyChangeAlert = false
@@ -103,7 +103,7 @@ struct NewSettingsView: View {
                     
                     Button("Go to Home") {
                         navigationManager.navigate(
-                            to: RouteID.newHome,
+                            to: RouteID.home,
                             parameters: RouteParameters(),
                             in: nil,
                             type: nil
@@ -170,6 +170,6 @@ struct SettingsNavigationCard<Destination: View>: View {
 }
 
 #Preview {
-    NewSettingsView()
+    SettingsView()
         .environmentObject(NavigationManager(strategy: SwiftUINavigationStrategy()))
 }
