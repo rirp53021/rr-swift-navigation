@@ -11,6 +11,15 @@ extension RouteID {
     /// Home screen route
     static let home = RouteID("home", type: .push)
     
+    /// New Home screen route
+    static let newHome = RouteID("newHome", type: .push)
+    
+    /// New Settings screen route
+    static let newSettings = RouteID("newSettings", type: .push)
+    
+    /// Nested Navigation screen route
+    static let nestedNavigation = RouteID("nestedNavigation", type: .push)
+    
     /// Profile screen route
     static let profile = RouteID("profile", type: .push)
     
@@ -19,6 +28,35 @@ extension RouteID {
     
     /// About screen route
     static let about = RouteID("about", type: .push)
+    
+    // MARK: - Demo Routes
+    
+    /// Push navigation demo
+    static let pushDemo = RouteID("pushDemo", type: .push)
+    
+    /// Push A view
+    static let pushA = RouteID("pushA", type: .push)
+    
+    /// Push B view
+    static let pushB = RouteID("pushB", type: .push)
+    
+    /// Push C view
+    static let pushC = RouteID("pushC", type: .push)
+    
+    /// Sheet demo
+    static let sheetDemo = RouteID("sheetDemo", type: .sheet)
+    
+    /// Full screen demo
+    static let fullScreenDemo = RouteID("fullScreenDemo", type: .fullScreen)
+    
+    /// Modal demo
+    static let modalDemo = RouteID("modalDemo", type: .modal)
+    
+    /// Replace demo
+    static let replaceDemo = RouteID("replaceDemo", type: .replace)
+    
+    /// Tab demo
+    static let tabDemo = RouteID("tabDemo", type: .tab)
     
     // MARK: - UIKit Routes
     
@@ -55,7 +93,8 @@ extension RouteID {
     /// Get all available routes
     static var allRoutes: [RouteID] {
         return [
-            home, profile, settings, about,
+            home, newHome, newSettings, nestedNavigation, profile, settings, about,
+            pushDemo, pushA, pushB, pushC, sheetDemo, fullScreenDemo, modalDemo, replaceDemo, tabDemo,
             profileVC, settingsVC,
             adminDashboard, adminUsers, adminAnalytics,
             productDeepLink, categoryDeepLink, userDeepLink
