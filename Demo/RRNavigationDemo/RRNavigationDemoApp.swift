@@ -14,7 +14,11 @@ struct RRNavigationDemoApp: App {
         _navigationManager = StateObject(wrappedValue: manager as! NavigationManager)
         
         // Create navigation coordinator
-        _navigationCoordinator = StateObject(wrappedValue: NavigationCoordinator(navigationManager: manager))
+        let coordinator = NavigationCoordinator(navigationManager: manager)
+        _navigationCoordinator = StateObject(wrappedValue: coordinator)
+        
+        // Set the navigation coordinator on the strategy
+        manager.setNavigationCoordinator(coordinator)
         
         // Register routes
         setupRoutes(manager: manager)

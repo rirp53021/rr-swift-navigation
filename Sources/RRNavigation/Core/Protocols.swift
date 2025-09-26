@@ -30,6 +30,9 @@ public protocol NavigationManagerProtocol: ObservableObject {
     func dismissModal()
     func dismissAllModals()
     func dismissModal(with key: String)
+    
+    // Navigation coordinator setup
+    func setNavigationCoordinator(_ coordinator: SwiftUINavigationCoordinator)
 }
 
 /// Navigation strategy protocol

@@ -113,6 +113,14 @@ public class NavigationManager: NavigationManagerProtocol {
         return results
     }
     
+    /// Set the navigation coordinator for SwiftUI strategy
+    /// - Parameter coordinator: The navigation coordinator
+    public func setNavigationCoordinator(_ coordinator: SwiftUINavigationCoordinator) {
+        if let swiftUIStrategy = activeStrategy as? SwiftUINavigationStrategy {
+            swiftUIStrategy.setNavigationCoordinator(coordinator)
+        }
+    }
+    
     public func navigate(to routeID: RouteID, parameters: RouteParameters? = nil, in tab: String? = nil, type: NavigationType? = nil) {
         guard let factory = factories[routeID.key] else {
             logger.warning("Route not found: \(routeID.key), falling back to home")

@@ -3,6 +3,7 @@ import RRNavigation
 
 struct ContentView: View {
     @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
     @State private var selectedTab = 0
     
     var body: some View {
@@ -38,6 +39,9 @@ struct ContentView: View {
             .tag(2)
         }
         .environmentObject(navigationManager)
+        .overlay(
+            NavigationPresenter(coordinator: navigationCoordinator)
+        )
     }
 }
 
