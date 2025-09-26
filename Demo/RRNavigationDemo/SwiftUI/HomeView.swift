@@ -24,7 +24,7 @@ struct HomeView: View {
                         color: .blue
                     ) {
                         navigationManager.navigate(
-                            to: RouteID.profile,
+                            to: .profile,
                             parameters: RouteParameters(data: ["userId": "home123", "source": "home"]),
                             in: nil
                         )
@@ -37,7 +37,7 @@ struct HomeView: View {
                         color: .green
                     ) {
                         navigationManager.navigate(
-                            to: RouteID.settings,
+                            to: .settings,
                             parameters: RouteParameters(data: ["section": "general"]),
                             in: nil,
                             type: .sheet
@@ -51,7 +51,7 @@ struct HomeView: View {
                         color: .orange
                     ) {
                         navigationManager.navigate(
-                            to: RouteID.profileVC,
+                            to: .profileVC,
                             parameters: RouteParameters(data: ["demo": "true"]),
                             in: nil,
                             type: .modal

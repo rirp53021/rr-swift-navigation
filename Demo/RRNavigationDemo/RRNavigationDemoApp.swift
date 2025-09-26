@@ -29,50 +29,31 @@ struct RRNavigationDemoApp: App {
     }
     
     private func setupRoutes(manager: any NavigationManagerProtocol) {
-        print("🚀 Setting up routes with Strategy Validation...")
-        print("=============================================")
         
         // Register simple factories using RouteKey definitions
-        print("\n📱 Registering simple factories using RouteKey definitions:")
         
         // New demo app factories
-        print("🎯 Registering NewHomeViewFactory for key: \(RouteID.newHome.key)")
-        manager.register(NewHomeViewFactory(), for: RouteID.newHome)
-        print("🎯 Registering NewSettingsViewFactory for key: \(RouteID.newSettings.key)")
-        manager.register(NewSettingsViewFactory(), for: RouteID.newSettings)
-        print("🎯 Registering NestedNavigationViewFactory for key: \(RouteID.nestedNavigation.key)")
-        manager.register(NestedNavigationViewFactory(), for: RouteID.nestedNavigation)
+        manager.register(NewHomeViewFactory(), for: .newHome)
+        manager.register(NewSettingsViewFactory(), for: .newSettings)
+        manager.register(NestedNavigationViewFactory(), for: .nestedNavigation)
         
         // Demo view factories
-        print("🎯 Registering PushDemoViewFactory for key: \(RouteID.pushDemo.key)")
-        manager.register(PushDemoViewFactory(), for: RouteID.pushDemo)
-        print("🎯 Registering PushAViewFactory for key: \(RouteID.pushA.key)")
-        manager.register(PushAViewFactory(), for: RouteID.pushA)
-        print("🎯 Registering PushBViewFactory for key: \(RouteID.pushB.key)")
-        manager.register(PushBViewFactory(), for: RouteID.pushB)
-        print("🎯 Registering PushCViewFactory for key: \(RouteID.pushC.key)")
-        manager.register(PushCViewFactory(), for: RouteID.pushC)
-        print("🎯 Registering SheetDemoViewFactory for key: \(RouteID.sheetDemo.key)")
-        manager.register(SheetDemoViewFactory(), for: RouteID.sheetDemo)
-        print("🎯 Registering FullScreenDemoViewFactory for key: \(RouteID.fullScreenDemo.key)")
-        manager.register(FullScreenDemoViewFactory(), for: RouteID.fullScreenDemo)
-        print("🎯 Registering ModalDemoViewFactory for key: \(RouteID.modalDemo.key)")
-        manager.register(ModalDemoViewFactory(), for: RouteID.modalDemo)
-        print("🎯 Registering ReplaceDemoViewFactory for key: \(RouteID.replaceDemo.key)")
-        manager.register(ReplaceDemoViewFactory(), for: RouteID.replaceDemo)
-        print("🎯 Registering TabDemoViewFactory for key: \(RouteID.tabDemo.key)")
-        manager.register(TabDemoViewFactory(), for: RouteID.tabDemo)
+        manager.register(PushDemoViewFactory(), for: .pushDemo)
+        manager.register(PushAViewFactory(), for: .pushA)
+        manager.register(PushBViewFactory(), for: .pushB)
+        manager.register(PushCViewFactory(), for: .pushC)
+        manager.register(SheetDemoViewFactory(), for: .sheetDemo)
+        manager.register(FullScreenDemoViewFactory(), for: .fullScreenDemo)
+        manager.register(ModalDemoViewFactory(), for: .modalDemo)
+        manager.register(ReplaceDemoViewFactory(), for: .replaceDemo)
+        manager.register(TabDemoViewFactory(), for: .tabDemo)
         
         // Original factories
-        print("🎯 Registering HomeViewFactory for key: \(RouteID.home.key)")
-        manager.register(HomeViewFactory(), for: RouteID.home)
-        print("🎯 Registering ProfileViewFactory for key: \(RouteID.profile.key)")
-        manager.register(ProfileViewFactory(), for: RouteID.profile)
-        print("🎯 Registering SettingsViewFactory for key: \(RouteID.settings.key)")
-        manager.register(SettingsViewFactory(), for: RouteID.settings)
+        manager.register(HomeViewFactory(), for: .home)
+        manager.register(ProfileViewFactory(), for: .profile)
+        manager.register(SettingsViewFactory(), for: .settings)
         
         // Demonstrate Chain of Responsibility with decoupled NavigationManager
-        print("\n🔗 Testing Chain of Responsibility with decoupled NavigationManager:")
         let chain = RouteRegistrationChainBuilder()
             .addHandler(AdminRouteHandler())
             .addHandler(DeepLinkRouteHandler())
