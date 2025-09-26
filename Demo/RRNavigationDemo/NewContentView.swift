@@ -8,28 +8,34 @@ struct NewContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // Home Tab
-            NewHomeView()
-                .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Home")
-                }
-                .tag(0)
+            NavigationView {
+                NewHomeView()
+            }
+            .tabItem {
+                Image(systemName: "house.fill")
+                Text("Home")
+            }
+            .tag(0)
             
             // Settings Tab
-            NewSettingsView()
-                .tabItem {
-                    Image(systemName: "gear")
-                    Text("Settings")
-                }
-                .tag(1)
+            NavigationView {
+                NewSettingsView()
+            }
+            .tabItem {
+                Image(systemName: "gear")
+                Text("Settings")
+            }
+            .tag(1)
             
             // Nested Navigation Tab
-            NestedNavigationView()
-                .tabItem {
-                    Image(systemName: "arrow.branch")
-                    Text("Nested")
-                }
-                .tag(2)
+            NavigationView {
+                NestedNavigationView()
+            }
+            .tabItem {
+                Image(systemName: "arrow.branch")
+                Text("Nested")
+            }
+            .tag(2)
         }
         .environmentObject(navigationManager)
     }

@@ -7,8 +7,7 @@ struct NewSettingsView: View {
     @State private var showingStrategyChangeAlert = false
     
     var body: some View {
-        NavigationView {
-            List {
+        List {
                 Section(header: Text("Navigation Strategy")) {
                     HStack {
                         Image(systemName: "gear.circle.fill")
@@ -120,7 +119,6 @@ struct NewSettingsView: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-        }
         .onAppear {
             selectedStrategy = navigationManager.activeStrategy.strategyType
         }

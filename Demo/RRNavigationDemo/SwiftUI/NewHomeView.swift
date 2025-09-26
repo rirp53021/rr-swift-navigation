@@ -6,8 +6,7 @@ struct NewHomeView: View {
     @State private var currentStrategy: String = "SwiftUI"
     
     var body: some View {
-        NavigationView {
-            ScrollView {
+        ScrollView {
                 VStack(spacing: 20) {
                     // Header
                     VStack(spacing: 8) {
@@ -162,7 +161,6 @@ struct NewHomeView: View {
             }
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
-        }
         .onAppear {
             currentStrategy = navigationManager.activeStrategy.strategyType.rawValue.capitalized
         }

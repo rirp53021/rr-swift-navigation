@@ -7,8 +7,7 @@ struct NestedNavigationView: View {
     @State private var selectedTab = 0
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
+        VStack(spacing: 20) {
                 // Header
                 VStack(spacing: 8) {
                     Text("Nested Navigation")
@@ -48,7 +47,6 @@ struct NestedNavigationView: View {
             }
             .navigationTitle("Nested Navigation")
             .navigationBarTitleDisplayMode(.inline)
-        }
     }
 }
 
