@@ -3,11 +3,12 @@ import RRNavigation
 
 /// Hashable wrapper for AnyView to work with NavigationPath
 struct HashableView: Hashable {
-    let id = UUID()
+    let id: String
     let view: AnyView
     
-    init(_ view: AnyView) {
+    init(_ view: AnyView, routeKey: String) {
         self.view = view
+        self.id = routeKey
     }
     
     func hash(into hasher: inout Hasher) {
@@ -56,15 +57,15 @@ class NavigationCoordinator: ObservableObject, SwiftUINavigationCoordinator {
         isModalPresented = true
     }
     
-    func pushView(_ view: AnyView, in tab: Int = 0) {
-        print("🎯 NavigationCoordinator: pushView called with view: \(type(of: view)) in tab: \(tab)")
+    func pushView(_ view: AnyView, routeKey: String, in tab: Int = 0) {
+        print("🎯 NavigationCoordinator: pushView called with view: \(type(of: view)) routeKey: \(routeKey) in tab: \(tab)")
         pushDestination = view
         
         if navigationPaths[tab] == nil {
             navigationPaths[tab] = NavigationPath()
         }
         
-        let hashableView = HashableView(view)
+        let hashableView = HashableView(view, routeKey: routeKey)
         navigationPaths[tab]?.append(hashableView)
         print("🎯 NavigationCoordinator: navigationPath count for tab \(tab) = \(navigationPaths[tab]?.count ?? 0)")
     }

@@ -10,7 +10,7 @@ public protocol SwiftUINavigationCoordinator: AnyObject {
     func presentSheet(_ view: AnyView)
     func presentFullScreen(_ view: AnyView)
     func presentModal(_ view: AnyView)
-    func pushView(_ view: AnyView, in tab: Int)
+    func pushView(_ view: AnyView, routeKey: String, in tab: Int)
     func dismissSheet()
     func dismissFullScreen()
     func dismissModal()
@@ -143,7 +143,7 @@ public class SwiftUINavigationStrategy: NavigationStrategy {
            let view = component as? AnyView {
             print("🎯 SwiftUINavigationStrategy: calling coordinator.pushView")
             let tabIndex = Int(tabId) ?? 0
-            coordinator.pushView(view, in: tabIndex)
+            coordinator.pushView(view, routeKey: destination.key, in: tabIndex)
         } else {
             print("🎯 SwiftUINavigationStrategy: coordinator or view is nil")
         }
