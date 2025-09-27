@@ -11,8 +11,12 @@ struct ContentView: View {
             // Home Tab
             NavigationStack(path: navigationCoordinator.getNavigationPath(for: 0)) {
                 HomeView()
-                    .navigationDestination(for: HashableView.self) { hashableView in
-                        hashableView.view
+                    .navigationDestination(for: String.self) { viewId in
+                        if let view = navigationCoordinator.viewRegistry[viewId] {
+                            view
+                        } else {
+                            Text("View not found")
+                        }
                     }
             }
             .tabItem {
@@ -24,8 +28,12 @@ struct ContentView: View {
             // Settings Tab
             NavigationStack(path: navigationCoordinator.getNavigationPath(for: 1)) {
                 SettingsView()
-                    .navigationDestination(for: HashableView.self) { hashableView in
-                        hashableView.view
+                    .navigationDestination(for: String.self) { viewId in
+                        if let view = navigationCoordinator.viewRegistry[viewId] {
+                            view
+                        } else {
+                            Text("View not found")
+                        }
                     }
             }
             .tabItem {
@@ -37,8 +45,12 @@ struct ContentView: View {
             // Nested Navigation Tab
             NavigationStack(path: navigationCoordinator.getNavigationPath(for: 2)) {
                 NestedNavigationView()
-                    .navigationDestination(for: HashableView.self) { hashableView in
-                        hashableView.view
+                    .navigationDestination(for: String.self) { viewId in
+                        if let view = navigationCoordinator.viewRegistry[viewId] {
+                            view
+                        } else {
+                            Text("View not found")
+                        }
                     }
             }
             .tabItem {

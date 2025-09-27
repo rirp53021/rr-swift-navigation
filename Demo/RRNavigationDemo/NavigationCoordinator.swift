@@ -1,25 +1,6 @@
 import SwiftUI
 import RRNavigation
 
-/// Hashable wrapper for AnyView to work with NavigationPath
-struct HashableView: Hashable {
-    let id: String
-    let view: AnyView
-    
-    init(_ view: AnyView, routeKey: String) {
-        self.view = view
-        // Create unique identifier with timestamp to ensure each push is unique
-        self.id = "\(routeKey)_\(Date().timeIntervalSince1970)_\(UUID().uuidString.prefix(8))"
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: HashableView, rhs: HashableView) -> Bool {
-        lhs.id == rhs.id
-    }
-}
 
 /// Navigation coordinator that bridges the navigation manager with SwiftUI views
 @MainActor
@@ -34,6 +15,7 @@ class NavigationCoordinator: ObservableObject, SwiftUINavigationCoordinator {
     // Push navigation support (iOS 16+)
     @Published var navigationPaths: [Int: NavigationPath] = [:]
     @Published var pushDestination: AnyView?
+    @Published var viewRegistry: [String: AnyView] = [:]
     
     private let navigationManager: any NavigationManagerProtocol
     
@@ -69,8 +51,12 @@ class NavigationCoordinator: ObservableObject, SwiftUINavigationCoordinator {
         // Clear the path first to ensure clean navigation
         navigationPaths[tab] = NavigationPath()
         
-        let hashableView = HashableView(view, routeKey: routeKey)
-        navigationPaths[tab]?.append(hashableView)
+        // Register the view with a unique identifier
+        let uniqueId = "\(routeKey)_\(Date().timeIntervalSince1970)"
+        viewRegistry[uniqueId] = view
+        
+        // Append the string identifier to the navigation path
+        navigationPaths[tab]?.append(uniqueId)
         print("🎯 NavigationCoordinator: navigationPath count for tab \(tab) = \(navigationPaths[tab]?.count ?? 0)")
     }
     
