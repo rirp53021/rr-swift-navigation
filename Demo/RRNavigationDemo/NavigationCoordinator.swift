@@ -48,9 +48,6 @@ class NavigationCoordinator: ObservableObject, SwiftUINavigationCoordinator {
             navigationPaths[tab] = NavigationPath()
         }
         
-        // Clear the path first to ensure clean navigation
-        navigationPaths[tab] = NavigationPath()
-        
         // Register the view with a unique identifier
         let uniqueId = "\(routeKey)_\(Date().timeIntervalSince1970)"
         viewRegistry[uniqueId] = view
