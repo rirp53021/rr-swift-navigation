@@ -11,7 +11,6 @@ public protocol SwiftUINavigationCoordinator: AnyObject {
     func presentFullScreen(_ view: AnyView)
     func presentModal(_ view: AnyView)
     func pushView(_ view: AnyView, in tab: Int)
-    func resetNavigationPath(for tab: Int)
     func dismissSheet()
     func dismissFullScreen()
     func dismissModal()
