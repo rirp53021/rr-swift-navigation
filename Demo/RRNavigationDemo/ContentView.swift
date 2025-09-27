@@ -9,8 +9,11 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // Home Tab
-            NavigationView {
+            NavigationStack(path: navigationCoordinator.getNavigationPath(for: 0)) {
                 HomeView()
+                    .navigationDestination(for: HashableView.self) { hashableView in
+                        hashableView.view
+                    }
             }
             .tabItem {
                 Image(systemName: "house.fill")
@@ -19,8 +22,11 @@ struct ContentView: View {
             .tag(0)
             
             // Settings Tab
-            NavigationView {
+            NavigationStack(path: navigationCoordinator.getNavigationPath(for: 1)) {
                 SettingsView()
+                    .navigationDestination(for: HashableView.self) { hashableView in
+                        hashableView.view
+                    }
             }
             .tabItem {
                 Image(systemName: "gear")
@@ -29,8 +35,11 @@ struct ContentView: View {
             .tag(1)
             
             // Nested Navigation Tab
-            NavigationView {
+            NavigationStack(path: navigationCoordinator.getNavigationPath(for: 2)) {
                 NestedNavigationView()
+                    .navigationDestination(for: HashableView.self) { hashableView in
+                        hashableView.view
+                    }
             }
             .tabItem {
                 Image(systemName: "arrow.branch")

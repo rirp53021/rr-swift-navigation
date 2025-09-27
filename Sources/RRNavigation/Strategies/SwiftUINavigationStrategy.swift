@@ -10,6 +10,7 @@ public protocol SwiftUINavigationCoordinator: AnyObject {
     func presentSheet(_ view: AnyView)
     func presentFullScreen(_ view: AnyView)
     func presentModal(_ view: AnyView)
+    func pushView(_ view: AnyView, in tab: Int)
     func dismissSheet()
     func dismissFullScreen()
     func dismissModal()
@@ -133,8 +134,20 @@ public class SwiftUINavigationStrategy: NavigationStrategy {
             navigationPaths[tabId] = createNavigationPath()
         }
         
-        // In a real implementation, this would update the NavigationPath with the built view
-        // The component is the built SwiftUI view from the factory
+        print("🎯 SwiftUINavigationStrategy: navigatePush called for \(destination.key)")
+        print("🎯 SwiftUINavigationStrategy: coordinator = \(navigationCoordinator != nil ? "available" : "nil")")
+        print("🎯 SwiftUINavigationStrategy: component type = \(type(of: component))")
+        
+        // Present the view through the navigation coordinator
+        if let coordinator = navigationCoordinator,
+           let view = component as? AnyView {
+            print("🎯 SwiftUINavigationStrategy: calling coordinator.pushView")
+            let tabIndex = Int(tabId) ?? 0
+            coordinator.pushView(view, in: tabIndex)
+        } else {
+            print("🎯 SwiftUINavigationStrategy: coordinator or view is nil")
+        }
+        
         Logger.shared.info("SwiftUI push navigation to: \(destination.key) with component: \(type(of: component)) in tab: \(tabId)")
     }
     
