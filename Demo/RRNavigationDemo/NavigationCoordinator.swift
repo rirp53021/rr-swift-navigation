@@ -63,7 +63,11 @@ class NavigationCoordinator: ObservableObject, SwiftUINavigationCoordinator {
         }
         return Binding(
             get: { self.navigationPaths[tab] ?? NavigationPath() },
-            set: { self.navigationPaths[tab] = $0 }
+            set: { newPath in
+                DispatchQueue.main.async {
+                    self.navigationPaths[tab] = newPath
+                }
+            }
         )
     }
     
