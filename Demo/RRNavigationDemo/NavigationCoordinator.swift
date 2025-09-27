@@ -49,7 +49,7 @@ class NavigationCoordinator: ObservableObject, SwiftUINavigationCoordinator {
         }
         
         // Register the view with a unique identifier
-        let uniqueId = "\(routeKey)_\(Date().timeIntervalSince1970)_\(UUID().uuidString.prefix(8))"
+        let uniqueId = routeKey
         viewRegistry[uniqueId] = view
         
         // Append the string identifier to the navigation path
