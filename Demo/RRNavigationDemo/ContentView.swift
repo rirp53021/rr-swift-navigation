@@ -47,6 +47,10 @@ struct ContentView: View {
             }
             .tag(2)
         }
+        .onChange(of: selectedTab) { newValue in
+            // Reset navigation path when switching tabs to ensure clean navigation
+            navigationCoordinator.resetNavigationPath(for: newValue)
+        }
         .environmentObject(navigationManager)
         .overlay(
             NavigationPresenter(coordinator: navigationCoordinator)

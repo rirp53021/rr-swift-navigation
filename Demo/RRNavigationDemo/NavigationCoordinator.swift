@@ -79,6 +79,12 @@ class NavigationCoordinator: ObservableObject, SwiftUINavigationCoordinator {
         )
     }
     
+    func resetNavigationPath(for tab: Int) {
+        print("🎯 NavigationCoordinator: resetNavigationPath for tab \(tab)")
+        navigationPaths[tab] = NavigationPath()
+        print("🎯 NavigationCoordinator: navigationPath reset for tab \(tab)")
+    }
+    
     func dismissSheet() {
         isSheetPresented = false
         presentedSheet = nil
