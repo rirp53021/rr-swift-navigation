@@ -8,7 +8,8 @@ struct HashableView: Hashable {
     
     init(_ view: AnyView, routeKey: String) {
         self.view = view
-        self.id = routeKey
+        // Create unique identifier with timestamp to ensure each push is unique
+        self.id = "\(routeKey)_\(Date().timeIntervalSince1970)_\(UUID().uuidString.prefix(8))"
     }
     
     func hash(into hasher: inout Hasher) {
@@ -64,6 +65,9 @@ class NavigationCoordinator: ObservableObject, SwiftUINavigationCoordinator {
         if navigationPaths[tab] == nil {
             navigationPaths[tab] = NavigationPath()
         }
+        
+        // Clear the path first to ensure clean navigation
+        navigationPaths[tab] = NavigationPath()
         
         let hashableView = HashableView(view, routeKey: routeKey)
         navigationPaths[tab]?.append(hashableView)
