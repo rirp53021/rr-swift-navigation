@@ -131,8 +131,6 @@ public class NavigationManager: ObservableObject {
         case .fullScreen:
             resetNavigationState()
             fullScreenContent = AnyView(step.factory.createView(params: step.params))
-        case .tab, .modal, .replace:
-            print("not implemented")
         }
     }
     
@@ -158,9 +156,5 @@ public class NavigationManager: ObservableObject {
             
             setCurrentTab(tabID)
         }
-    }
-    
-    private func present(_ routeID: RouteID, step: NavigationStep) {
-        
     }
 }
