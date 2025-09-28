@@ -3,67 +3,30 @@ import RRNavigation
 
 @main
 struct RRNavigationDemoApp: App {
-    @StateObject private var navigationManager: NavigationManager
-    @StateObject private var navigationCoordinator: NavigationCoordinator
-    
-    init() {
-        // Create navigation manager with SwiftUI strategy
-        let manager = NavigationManagerFactory.createForSwiftUI(
-            persistence: InMemoryPersistence()
-        )
-        _navigationManager = StateObject(wrappedValue: manager as! NavigationManager)
-        
-        // Create navigation coordinator
-        let coordinator = NavigationCoordinator(navigationManager: manager)
-        _navigationCoordinator = StateObject(wrappedValue: coordinator)
-        
-        // Set the navigation coordinator on the strategy
-        manager.setNavigationCoordinator(coordinator)
-        
-        // Register routes
-        setupRoutes(manager: manager)
-    }
+    @StateObject private var navigationManager = NavigationManager()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(navigationManager)
-                .environmentObject(navigationCoordinator)
+                .onAppear {
+                    setupNavigation()
+                }
         }
     }
     
-    private func setupRoutes(manager: any NavigationManagerProtocol) {
+    private func setupNavigation() {
+        // Register navigation handler
+        let handler = DemoNavigationHandler()
+        navigationManager.registerHandler(handler)
         
-        // Register simple factories using RouteKey definitions
+        // Register tabs
+        let homeFactory = HomeTabFactory()
+        let profileFactory = ProfileTabFactory()
+        let settingsFactory = SettingsTabFactory()
         
-        // Demo app factories
-        manager.register(HomeViewFactory(), for: .home)
-        manager.register(SettingsViewFactory(), for: .settings)
-        manager.register(NestedNavigationViewFactory(), for: .nestedNavigation)
-        
-        // Demo view factories
-        manager.register(PushDemoViewFactory(), for: .pushDemo)
-        manager.register(PushAViewFactory(), for: .pushA)
-        manager.register(PushBViewFactory(), for: .pushB)
-        manager.register(PushCViewFactory(), for: .pushC)
-        manager.register(SheetDemoViewFactory(), for: .sheetDemo)
-        manager.register(FullScreenDemoViewFactory(), for: .fullScreenDemo)
-        manager.register(ModalDemoViewFactory(), for: .modalDemo)
-        manager.register(ReplaceDemoViewFactory(), for: .replaceDemo)
-        manager.register(TabDemoViewFactory(), for: .tabDemo)
-        
-        
-        // Demonstrate Chain of Responsibility with decoupled NavigationManager
-        let chain = RouteRegistrationChainBuilder()
-            .addHandler(AdminRouteHandler())
-            .addHandler(DeepLinkRouteHandler())
-            .build()
-        
-        guard let chain = chain else {
-            return
-        }
-        
-        // Pass route keys from the app, not hardcoded in NavigationManager
-        manager.registerRoutes(RouteID.allRoutes, using: chain)
+        navigationManager.registerTab(homeFactory)
+        navigationManager.registerTab(profileFactory)
+        navigationManager.registerTab(settingsFactory)
     }
 }

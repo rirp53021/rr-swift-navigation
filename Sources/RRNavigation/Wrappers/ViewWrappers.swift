@@ -4,21 +4,6 @@ import Foundation
 import SwiftUI
 import UIKit
 
-/// Type-erased view factory that works with ViewComponent enum
-internal class AnyViewFactory: ViewFactory {
-    private let _createView: (RouteContext) -> ViewComponent
-    
-    public init<T: ViewFactory>(_ factory: T) {
-        self._createView = { context in
-            factory.createView(with: context)
-        }
-    }
-    
-    public func createView(with context: RouteContext) -> ViewComponent {
-        return _createView(context)
-    }
-}
-
 /// Internal wrapper for SwiftUI views to be used in UIKit navigation
 internal struct SwiftUIViewWrapper: UIViewControllerRepresentable {
     let view: AnyView

@@ -22,6 +22,10 @@ packages:
     url: https://github.com/rirp53021/rr-swift-persistence.git
     from: 1.1.0
     generateScheme: false
+  RRUIComponents:
+    url: https://github.com/rirp53021/rr-swift-ui-components.git
+    from: 2.1.0
+    generateScheme: false
 
 settings:
   SWIFT_VERSION: "5.9"
@@ -41,6 +45,7 @@ targets:
     dependencies:
       - package: RRFoundation
       - package: RRPersistence
+      - package: RRUIComponents
     settings:
       PRODUCT_NAME: RRNavigation
       PRODUCT_BUNDLE_IDENTIFIER: com.rrnavigation.core
