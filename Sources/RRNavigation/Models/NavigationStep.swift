@@ -16,7 +16,7 @@ public struct NavigationStep {
     public let type: NavigationType
     
     /// The view factory to create the view
-    public let factory: ViewFactory.Type
+    public let factory: any ViewFactory.Type
     
     /// Parameters for the view
     public let params: [String: Any]?
@@ -24,7 +24,7 @@ public struct NavigationStep {
     public init(
         tab: RRTabID? = nil,
         type: NavigationType,
-        factory: ViewFactory.Type,
+        factory: any ViewFactory.Type,
         params: [String: Any]? = nil
     ) {
         self.tab = tab
@@ -33,3 +33,4 @@ public struct NavigationStep {
         self.params = params
     }
 }
+

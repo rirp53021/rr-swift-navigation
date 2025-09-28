@@ -23,4 +23,6 @@ extension RouteID {
     static var fullScreenDemo: Self { .init("full-screen-demo") }
     
     static var sheetDemo: Self { .init("sheet-demo") }
+    
+    static var login: Self { .init("login") }
 }

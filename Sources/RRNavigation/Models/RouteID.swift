@@ -46,12 +46,3 @@ public struct RouteID: Hashable {
         return parameters[key] as? T
     }
 }
-
-// MARK: - Demo Route Extensions
-extension RouteID {
-    public static let profile = RouteID("profile")
-    public static let settings = RouteID("settings")
-    public static let editProfile = RouteID("edit-profile")
-    public static let about = RouteID("about")
-    public static let help = RouteID("help")
-}

@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-public struct RRTabID: Hashable {
-    public let rawValue: String
-    
-    public init(_ rawValue: String) {
-        self.rawValue = rawValue
-    }
-}
-
 public struct RRTab: Identifiable, Hashable {
     public var id: RRTabID
     public let name: String
@@ -36,5 +28,4 @@ public struct RRTab: Identifiable, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id.rawValue)
     }
-    
 }

@@ -15,3 +15,4 @@ public protocol ViewFactory<Content> {
     /// - Returns: The view to be displayed
     @ViewBuilder static func createView(params: [String: Any]?) -> Content
 }
+

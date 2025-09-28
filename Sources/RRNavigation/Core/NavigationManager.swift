@@ -5,23 +5,21 @@ import SwiftUI
 import Combine
 import RRFoundation
 
-extension NavigationManager {
-    subscript(tab id: RRTabID) -> Binding<NavigationPath> {
-        Binding(
-            get: { self.tabNavigationPaths[id] ?? NavigationPath() },
-            set: { self.tabNavigationPaths[id] = $0 }
-        )
-    }
-}
-
 @MainActor
 public class NavigationManager: ObservableObject {
     // MARK: - Published Properties
-    @Published internal private(set) var registeredTabs: [RRTab] = []
-    @Published internal var tabNavigationPaths: [RRTabID: NavigationPath] = [:]
-    @Published internal var currentTab: RRTabID?
+    internal var appModules: Set<AppModule> = []
+    @Published internal var currentAppModule: AppModuleID?
+    @Published internal var currentNavigationPath: NavigationPath = NavigationPath()
+    internal private(set) var registeredTabs: [RRTab] = []
+    internal var tabNavigationPaths: [RRTabID: NavigationPath] = [:]
     @Published internal var isSheetShown: Bool = false
     @Published internal var isFullScreenShown: Bool = false
+    @Published internal var currentTab: RRTabID? {
+        didSet {
+            updateCurrentNavigationPath()
+        }
+    }
     
     internal var sheetContent: AnyView? {
         didSet {
@@ -38,9 +36,39 @@ public class NavigationManager: ObservableObject {
     // MARK: - Private Properties
     private let logger = Logger.shared
     
-    public init() { }
+    public init(appModules: Set<AppModule> = [], initialModel: AppModuleID? = nil) {
+        self.currentAppModule = initialModel
+        self.appModules = appModules
+    }
     
     // MARK: - View Registration
+    
+    public func registerAppModule(_ module: AppModule) {
+        appModules.insert(module)
+    }
+    
+    public func setAppModule(_ module: AppModuleID) {
+        currentAppModule = module
+        
+        // Handle app module change
+        if let appModule = appModules.first(where: { $0.id == module }) {
+            handleAppModuleChange(appModule)
+        }
+    }
+    
+    private func handleAppModuleChange(_ appModule: AppModule) {
+        switch appModule.contentMode {
+        case .contentOnly:
+            // Clear all tabs and navigation paths for content-only mode
+            clearAllTabs()
+            currentTab = nil
+            
+        case .tabStructure:
+            // Keep existing tabs or create new ones based on the app module
+            // This could be expanded to create specific tabs for the module
+            break
+        }
+    }
     
     /// Register a navigation handler
     /// - Parameter handler: The handler to register
@@ -79,6 +107,15 @@ public class NavigationManager: ObservableObject {
         }
     }
     
+    /// Update currentNavigationPath based on currentTab
+    private func updateCurrentNavigationPath() {
+        if let tabID = currentTab {
+            currentNavigationPath = tabNavigationPaths[tabID] ?? NavigationPath()
+        } else {
+            currentNavigationPath = NavigationPath()
+        }
+    }
+    
     // MARK: - Navigation
     
     /// Navigate to a route using the registered handlers
@@ -104,6 +141,13 @@ public class NavigationManager: ObservableObject {
     private func resetNavigationState() {
         sheetContent = nil
         fullScreenContent = nil
+    }
+    
+    /// Clear all tabs and their navigation paths
+    public func clearAllTabs() {
+        registeredTabs.removeAll()
+        tabNavigationPaths.removeAll()
+        currentTab = nil
     }
     
     @ViewBuilder

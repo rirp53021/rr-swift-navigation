@@ -2,29 +2,40 @@ import SwiftUI
 import RRNavigation
 
 struct ContentView: View {
+    @EnvironmentObject var navigationManager: NavigationManager
+    
     var body: some View {
         VStack {
-            
-            VStack {
-                Text("RRNavigation Demo")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding()
+            // App Module Control
+            HStack {
+                Button("Not Authenticated") {
+                    navigationManager.setAppModule(.notAuthenticated)
+                }
+                .buttonStyle(.bordered)
+                .foregroundColor(.red)
                 
-                Text("This demo showcases the RRNavigation library with tab-based navigation and routing capabilities.")
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                
-                Spacer()
+                Button("Authenticated") {
+                    navigationManager.setAppModule(.authenticated)
+                }
+                .buttonStyle(.bordered)
+                .foregroundColor(.green)
             }
-            .navigation()
+            .padding()
+            
+            // Main Content
+            if navigationManager.currentAppModule == .notAuthenticated {
+                // Show login view for not authenticated state
+                LoginView()
+            } else {
+                // Show tabbed navigation for authenticated state
+                EmptyView()
+                    .modifier(NavigationViewModifier())
+            }
         }
     }
-    
-    
 }
 
 #Preview {
     ContentView()
+        .environmentObject(NavigationManager(initialModel: .notAuthenticated))
 }

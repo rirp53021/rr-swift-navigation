@@ -13,14 +13,30 @@ public struct NavigationViewModifier: ViewModifier {
     @EnvironmentObject private var navigationManager: NavigationManager
     
     public func body(content: Content) -> some View {
-        content
-            .overlay(tabView)
-            .sheet(isPresented: $navigationManager.isSheetShown) {
-                navigationManager.sheetContent
+        ZStack {
+            content
+                .sheet(isPresented: $navigationManager.isSheetShown) {
+                    navigationManager.sheetContent
+                }
+                .fullScreenCover(isPresented: $navigationManager.isFullScreenShown) {
+                    navigationManager.fullScreenContent
+                }
+            
+            if let currentAppModuleID = navigationManager.currentAppModule,
+               let currentAppModule = navigationManager.appModules.first(where: {$0.id == currentAppModuleID }) {
+                let currenctAppRootModule = AnyView(currentAppModule.rootView.createView(params: nil))
+                
+                switch currentAppModule.contentMode {
+                case .contentOnly:
+                    NavigationStack(path: $navigationManager.currentNavigationPath) {
+                        currenctAppRootModule
+                    }
+                case .tabStructure:
+                    currenctAppRootModule
+                        .overlay(tabView)
+                }
             }
-            .fullScreenCover(isPresented: $navigationManager.isFullScreenShown) {
-                navigationManager.fullScreenContent
-            }
+        }
     }
     
     var tabView: some View {
@@ -29,7 +45,10 @@ public struct NavigationViewModifier: ViewModifier {
     
     private func tabContent() -> some View {
         ForEach(navigationManager.registeredTabs) { tab in
-            NavigationStack(path: navigationManager[tab: tab.id]) {
+            NavigationStack(path: Binding(
+                get: { navigationManager.tabNavigationPaths[tab.id] ?? NavigationPath() },
+                set: { navigationManager.tabNavigationPaths[tab.id] = $0 }
+            )) {
                 tabRootView(tab)
             }
             .tabItem { tabItem(tab) }
