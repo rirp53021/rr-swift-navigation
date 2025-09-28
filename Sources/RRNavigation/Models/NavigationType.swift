@@ -9,7 +9,5 @@ public enum NavigationType: String, CaseIterable, Codable {
     case push
     case sheet
     case fullScreen
-    case tab
-    case modal
     case replace
 }

@@ -10,11 +10,19 @@ import RRNavigation
 
 struct DemoNavigationHandler: NavigationHandler {
     func canNavigate(to route: RouteID) -> Bool {
-        return [.profile, .settings, .editProfile, .about, .help].contains(route)
+        return [.home, .profile, .settings, .editProfile, .about, .help, .fullScreenDemo, .sheetDemo].contains(route)
     }
     
     func getNavigation(to route: RouteID) -> NavigationStep? {
         switch route {
+        case .home:
+            return NavigationStep(
+                tab: .home,
+                type: .push,
+                factory: HomeViewFactory.self,
+                params: route.parameters
+            )
+            
         case .profile:
             return NavigationStep(
                 tab: .profile,
@@ -51,6 +59,20 @@ struct DemoNavigationHandler: NavigationHandler {
                 factory: HelpViewFactory.self,
                 params: route.parameters
             )
+            
+        case .fullScreenDemo:
+            return NavigationStep(
+                type: .fullScreen,
+                factory: FullScreenDemoViewFactory.self,
+                params: route.parameters
+            )
+            
+        case .sheetDemo:
+            return NavigationStep(
+                type: .sheet,
+                factory: SheetDemoViewFactory.self,
+                params: route.parameters
+            )
         default:
             return nil
         }
@@ -58,6 +80,12 @@ struct DemoNavigationHandler: NavigationHandler {
 }
 
 // MARK: - View Factories
+
+struct HomeViewFactory: ViewFactory {
+    @ViewBuilder static func createView(params: [String: Any]?) -> some View {
+        HomeView()
+    }
+}
 
 struct ProfileViewFactory: ViewFactory {
     @ViewBuilder static func createView(params: [String: Any]?) -> some View {
@@ -89,3 +117,14 @@ struct HelpViewFactory: ViewFactory {
     }
 }
 
+struct FullScreenDemoViewFactory: ViewFactory {
+    @ViewBuilder static func createView(params: [String: Any]?) -> some View {
+        FullScreenDemoView()
+    }
+}
+
+struct SheetDemoViewFactory: ViewFactory {
+    @ViewBuilder static func createView(params: [String: Any]?) -> some View {
+        SheetDemoView()
+    }
+}

@@ -24,7 +24,7 @@ struct HomeView: View {
             
             VStack(spacing: 16) {
                 Button("Go to Profile") {
-                    navigationManager.navigate(to: .profile)
+                    navigationManager.navigate(to: .profile, forceReset: false)
                 }
                 .buttonStyle(.borderedProminent)
                 
@@ -32,6 +32,18 @@ struct HomeView: View {
                     navigationManager.navigate(to: .settings)
                 }
                 .buttonStyle(.bordered)
+                
+                Button("Show Full Screen Cover") {
+                    navigationManager.navigate(to: .fullScreenDemo)
+                }
+                .buttonStyle(.bordered)
+                .foregroundColor(.orange)
+                
+                Button("Show Sheet") {
+                    navigationManager.navigate(to: .sheetDemo)
+                }
+                .buttonStyle(.bordered)
+                .foregroundColor(.blue)
             }
             
             Spacer()

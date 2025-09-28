@@ -8,6 +8,8 @@
 import RRNavigation
 
 extension RouteID {
+    static var home: Self { .init("home") }
+    
     static var profile: Self { .init("profile") }
     
     static var settings: Self { .init("settings") }
@@ -17,4 +19,8 @@ extension RouteID {
     static var about: Self { .init("about") }
     
     static var help: Self { .init("help") }
+    
+    static var fullScreenDemo: Self { .init("full-screen-demo") }
+    
+    static var sheetDemo: Self { .init("sheet-demo") }
 }

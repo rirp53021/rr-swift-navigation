@@ -14,7 +14,7 @@ struct HomeTabFactory: RRTabFactory {
             id: .home,
             name: "Home",
             icon: Image(systemName: "house.fill"),
-            rootView: HomeView()
+            rootRouteID: .home
         )
     }
 }
@@ -25,7 +25,7 @@ struct ProfileTabFactory: RRTabFactory {
             id: .profile,
             name: "Profile",
             icon: Image(systemName: "person.fill"),
-            rootView: ProfileView()
+            rootRouteID: .profile
         )
     }
 }
@@ -36,7 +36,7 @@ struct SettingsTabFactory: RRTabFactory {
             id: .settings,
             name: "Settings",
             icon: Image(systemName: "gear"),
-            rootView: SettingsView()
+            rootRouteID: .settings
         )
     }
 }

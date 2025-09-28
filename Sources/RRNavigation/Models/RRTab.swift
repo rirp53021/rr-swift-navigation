@@ -19,13 +19,14 @@ public struct RRTab: Identifiable, Hashable {
     public var id: RRTabID
     public let name: String
     public let icon: Image?
-    private let rootView: AnyView
+    internal let rootRouteID: RouteID
     
-    public init<V: View>(id: RRTabID, name: String, icon: Image?, rootView: V) {
+    /// Initialize tab with a RouteID (will be resolved to view by NavigationManager)
+    public init(id: RRTabID, name: String, icon: Image?, rootRouteID: RouteID) {
         self.id = id
         self.name = name
         self.icon = icon
-        self.rootView = AnyView(rootView)
+        self.rootRouteID = rootRouteID
     }
     
     public static func == (lhs: RRTab, rhs: RRTab) -> Bool {
@@ -36,9 +37,4 @@ public struct RRTab: Identifiable, Hashable {
         hasher.combine(id.rawValue)
     }
     
-    /// Get the root view for this tab
-    @ViewBuilder
-    public func getRootView() -> some View {
-        rootView
-    }
 }

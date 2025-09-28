@@ -24,35 +24,34 @@ public struct NavigationViewModifier: ViewModifier {
     }
     
     var tabView: some View {
-        TabView(selection: Binding(
-            get: { navigationManager.currentTab },
-            set: { setCurrentTab($0) }
-        ), content: tabContent)
+        TabView(selection: $navigationManager.currentTab, content: tabContent)
     }
     
     private func tabContent() -> some View {
-        ForEach(navigationManager.tabs) { tab in
-            NavigationStack(path: Binding(
-                get: { navigationManager.tabNavigationPaths[tab.id] ?? NavigationPath() },
-                set: { navigationManager.tabNavigationPaths[tab.id] = $0 }
-            )) {
-                tab.getRootView()
-                    .navigationDestination(for: RouteID.self, destination: navigationManager.getRegisteredView)
+        ForEach(navigationManager.registeredTabs) { tab in
+            NavigationStack(path: navigationManager[tab: tab.id]) {
+                tabRootView(tab)
             }
-            .tabItem {
-                if let icon = tab.icon {
-                    icon
-                }
-                Text(tab.name)
-            }
+            .tabItem { tabItem(tab) }
             .tag(tab.id)
         }
     }
     
-    private func setCurrentTab(_ tabID: RRTabID?) {
-        if let tabID = tabID {
-            navigationManager.setCurrentTab(tabID)
+    @ViewBuilder
+    private func tabRootView(_ tab: RRTab) -> some View {
+        navigationManager.getRootView(for: tab)
+            .navigationDestination(
+                for: RouteID.self,
+                destination: navigationManager.getRegisteredView
+            )
+    }
+    
+    @ViewBuilder
+    private func tabItem(_ tab: RRTab) -> some View {
+        if let icon = tab.icon {
+            icon
         }
+        Text(tab.name)
     }
 }
 
