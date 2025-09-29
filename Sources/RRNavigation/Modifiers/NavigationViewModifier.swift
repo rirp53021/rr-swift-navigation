@@ -12,9 +12,10 @@ import RRUIComponents
 public struct NavigationViewModifier: ViewModifier {
     @EnvironmentObject private var navigationManager: NavigationManager
     
+    public init() {}
+    
     public func body(content: Content) -> some View {
-        content
-            .overlay(tabView)
+        mainContentView
             .sheet(isPresented: $navigationManager.isSheetShown) {
                 navigationManager.sheetContent
             }
@@ -23,35 +24,55 @@ public struct NavigationViewModifier: ViewModifier {
             }
     }
     
-    var tabView: some View {
-        TabView(selection: $navigationManager.currentTab, content: tabContent)
+    var mainContentView: some View {
+        MainContentView()
     }
     
-    private func tabContent() -> some View {
-        ForEach(navigationManager.registeredTabs) { tab in
-            NavigationStack(path: $navigationManager.currentNavigationPath) {
-                tabRootView(tab)
+}
+
+// MARK: - Main Content View
+struct MainContentView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    
+    var body: some View {
+        if let currentAppModuleID = navigationManager.currentAppModule,
+           let currentAppModule = navigationManager.appModules.first(where: { $0.id == currentAppModuleID }) {
+            switch currentAppModule.contentMode {
+            case .contentOnly:
+                // Show content-only view (like login)
+                NavigationStack(path: $navigationManager.currentNavigationPath) {
+                    AnyView(currentAppModule.rootView.createView(params: nil))
+                        .navigationDestination(
+                            for: RouteID.self,
+                            destination: navigationManager.getRegisteredView
+                        )
+                }
+            case .tabStructure:
+                // Show tabbed navigation
+                TabView(selection: $navigationManager.currentTab) {
+                    ForEach(navigationManager.registeredTabs) { tab in
+                        NavigationStack(path: $navigationManager.currentNavigationPath) {
+                            navigationManager.getRootView(for: tab)
+                                .navigationDestination(
+                                    for: RouteID.self,
+                                    destination: navigationManager.getRegisteredView
+                                )
+                        }
+                        .tabItem {
+                            if let icon = tab.icon {
+                                icon
+                            }
+                            Text(tab.name)
+                        }
+                        .tag(tab.id)
+                    }
+                }
             }
-            .tabItem { tabItem(tab) }
-            .tag(tab.id)
+        } else {
+            // Fallback if no current app module
+            Text("No App Module Selected")
+                .foregroundColor(.secondary)
         }
-    }
-    
-    @ViewBuilder
-    private func tabRootView(_ tab: RRTab) -> some View {
-        navigationManager.getRootView(for: tab)
-            .navigationDestination(
-                for: RouteID.self,
-                destination: navigationManager.getRegisteredView
-            )
-    }
-    
-    @ViewBuilder
-    private func tabItem(_ tab: RRTab) -> some View {
-        if let icon = tab.icon {
-            icon
-        }
-        Text(tab.name)
     }
 }
 

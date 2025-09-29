@@ -19,7 +19,7 @@ public enum AppRootContentMode {
 }
 
 public struct AppModule: Hashable {
-    var id: AppModuleID
+    public var id: AppModuleID
     var rootView: any ViewFactory.Type
     var contentMode: AppRootContentMode
     

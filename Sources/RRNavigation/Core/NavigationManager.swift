@@ -8,10 +8,10 @@ import RRFoundation
 @MainActor
 public class NavigationManager: ObservableObject {
     // MARK: - Published Properties
-    internal var appModules: Set<AppModule> = []
+    @Published public var appModules: Set<AppModule> = []
     @Published public var currentAppModule: AppModuleID?
     @Published internal var currentNavigationPath: NavigationPath = NavigationPath()
-    internal private(set) var registeredTabs: [RRTab] = []
+    @Published internal private(set) var registeredTabs: [RRTab] = []
     internal var tabNavigationPaths: [RRTabID: NavigationPath] = [:]
     @Published internal var isSheetShown: Bool = false
     @Published internal var isFullScreenShown: Bool = false
@@ -49,19 +49,8 @@ public class NavigationManager: ObservableObject {
     
     public func setAppModule(_ module: AppModuleID) {
         currentAppModule = module
-        
-        // Handle app module change
-        if let appModule = appModules.first(where: { $0.id == module }) {
-            handleAppModuleChange(appModule)
-        }
     }
-    
-    private func handleAppModuleChange(_ appModule: AppModule) {
-        // App modules don't automatically clear tabs
-        // Tabs should be managed independently through registerTab/unregisterTab methods
-        // This method is reserved for future app module-specific logic if needed
-    }
-    
+
     /// Register a navigation handler
     /// - Parameter handler: The handler to register
     public func registerHandler(_ handler: NavigationHandler) {
@@ -135,18 +124,13 @@ public class NavigationManager: ObservableObject {
         fullScreenContent = nil
     }
     
-    /// Clear all tabs and their navigation paths
-    public func clearAllTabs() {
-        registeredTabs.removeAll()
-        tabNavigationPaths.removeAll()
-        currentTab = nil
-    }
-    
     @ViewBuilder
     func getRegisteredView(for routeID: RouteID) -> some View {
         if let handler = handlers.first(where: { $0.canNavigate(to: routeID) }),
            let step = handler.getNavigation(to: routeID) {
             AnyView(step.factory.createView(params: step.params))
+        } else {
+            Text("View not found for route: \(routeID.value)")
         }
     }
     
@@ -177,17 +161,19 @@ public class NavigationManager: ObservableObject {
                 return
             }
             
+            resetNavigationState()
+            
             let isRootView = targetTab.rootRouteID == routeID
             
             if isRootView && forceReset {
                 // If tab's root view is the same as routeID and forceReset is true, append the path
-                tabNavigationPaths[tabID]?.append(routeID)
+                currentNavigationPath.append(routeID)
             } else if isRootView && !forceReset {
                 // If tab's root view is the same as routeID and forceReset is false, do not append the path
                 // (stay at root, don't navigate)
             } else {
                 // If tab's root view is different from routeID (regardless of forceReset), append the path
-                tabNavigationPaths[tabID]?.append(routeID)
+                currentNavigationPath.append(routeID)
             }
             
             setCurrentTab(tabID)

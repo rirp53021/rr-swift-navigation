@@ -9,6 +9,8 @@ import SwiftUI
 import RRNavigation
 
 struct SettingsView: View {
+    @EnvironmentObject var navigationManager: NavigationManager
+    
     @State private var notificationsEnabled = true
     @State private var darkModeEnabled = false
     
@@ -29,8 +31,14 @@ struct SettingsView: View {
                 }
                 
                 Section("Navigation") {
-                    NavigationLink("About", destination: AboutView())
-                    NavigationLink("Help", destination: HelpView())
+                    Button("About") { navigationManager.navigate(to: .about) }
+                    Button("Help") { navigationManager.navigate(to: .help) }
+                }
+                
+                Section("Account") {
+                    Button("Sign Out") {
+                        navigationManager.setAppModule(.notAuthenticated)
+                    }
                 }
             }
             

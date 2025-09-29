@@ -30,6 +30,11 @@ struct SheetDemoView: View {
                 .buttonStyle(.bordered)
                 .foregroundColor(.orange)
                 
+                Button("Go to Settings") {
+                    navigationManager.navigate(to: .settings)
+                }
+                .buttonStyle(.bordered)
+                
                 Button("Dismiss") {
                     dismiss()
                 }

@@ -31,6 +31,11 @@ struct FullScreenDemoView: View {
                 .buttonStyle(.bordered)
                 .foregroundColor(.blue)
                 
+                Button("Go to Settings") {
+                    navigationManager.navigate(to: .settings)
+                }
+                .buttonStyle(.bordered)
+                
                 Button("Dismiss") {
                     dismiss()
                 }
