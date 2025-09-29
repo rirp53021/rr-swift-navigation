@@ -1,16 +1,18 @@
 # RRNavigation
 
-A cross-UI navigation framework for iOS that works with both SwiftUI and UIKit. Provides centralized navigation management with strategy pattern implementation.
+A modern SwiftUI navigation framework for iOS that provides centralized navigation management with a clean, modular architecture. Built with SwiftUI-first design and supports complex navigation patterns including tab-based navigation, modal presentations, and deep linking.
 
 ## Features
 
-- **Cross-UI Support**: Works with both SwiftUI and UIKit
-- **Strategy Pattern**: Clean separation between UI implementations
-- **Centralized Management**: Single source of truth for navigation state
-- **Type Safety**: Protocol-based factories with type erasure
-- **Persistence**: Optional state persistence and restoration
-- **Deep Linking**: Query string parameter encoding/decoding
-- **Testing**: Built-in test utilities and mock strategies
+- **SwiftUI-First**: Built specifically for SwiftUI with NavigationStack support
+- **Modular Architecture**: App modules and navigation handlers for organized code
+- **Tab Navigation**: Full support for tab-based navigation with individual navigation paths
+- **Modal Presentations**: Sheet and full-screen modal support
+- **Type-Safe Routes**: RouteID-based navigation with parameter support
+- **Chain of Responsibility**: Organized route handling with dedicated navigation handlers
+- **App Module System**: Support for different app states (authenticated/unauthenticated)
+- **Deep Linking**: Built-in support for route parameters and deep linking
+- **iOS 16+**: Leverages modern SwiftUI features with NavigationStack
 
 ## Installation
 
@@ -20,208 +22,320 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/rirp53021/rr-swift-navigator.git", from: "1.0.0")
+    .package(url: "https://github.com/rirp53021/rr-swift-navigator.git", from: "1.1.1")
 ]
 ```
 
 Or add it through Xcode:
 1. File → Add Package Dependencies
 2. Enter the repository URL: `https://github.com/rirp53021/rr-swift-navigator.git`
-3. Select the version you want to use
+3. Select version 1.1.1 or later
+
+### Requirements
+
+- iOS 16.0+
+- macOS 13.0+
+- tvOS 16.0+
+- watchOS 9.0+
+- visionOS 1.0+
+- Swift 5.9+
 
 ## Quick Start
 
 ### Basic Setup
 
 ```swift
+import SwiftUI
 import RRNavigation
 
-// Create a navigation manager
-let strategy = NavigationStrategyType.swiftUI.createStrategy()
-let navigationManager = NavigationManager(strategy: strategy)
-
-// Register a route
-let homeFactory = SwiftUIViewFactory { context in
-    HomeView(parameters: context.parameters)
+@main
+struct MyApp: App {
+    @StateObject private var navigationManager = NavigationManager(initialModel: .authenticated)
+    
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environmentObject(navigationManager)
+                .onAppear {
+                    setupNavigation()
+                }
+        }
+    }
+    
+    private func setupNavigation() {
+        // Register app modules
+        navigationManager.registerAppModule(.authenticated)
+        navigationManager.registerAppModule(.notAuthenticated)
+        
+        // Register navigation handlers
+        let handler = MyNavigationHandler()
+        navigationManager.registerHandler(handler)
+        
+        // Register tabs
+        let homeFactory = HomeTabFactory()
+        let profileFactory = ProfileTabFactory()
+        
+        navigationManager.registerTab(homeFactory)
+        navigationManager.registerTab(profileFactory)
+    }
 }
-navigationManager.register(homeFactory, for: "home")
-
-// Navigate to a route
-navigationManager.navigate(to: "home", parameters: RouteParameters(data: ["userId": "123"]))
 ```
 
-### SwiftUI Integration
+### Content View
 
 ```swift
 import SwiftUI
 import RRNavigation
 
 struct ContentView: View {
-    @StateObject private var navigationManager = NavigationManager.shared
+    @EnvironmentObject var navigationManager: NavigationManager
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                Button("Go to Home") {
-                    Task {
-                        navigationManager.navigate(to: "home")
-                    }
-                }
-            }
-        }
-        .environmentObject(navigationManager)
+        EmptyView()
+            .navigation()
     }
 }
 ```
 
-### UIKit Integration
+### Navigation Handler
 
 ```swift
-import UIKit
+import SwiftUI
 import RRNavigation
 
-class ViewController: UIViewController {
-    private let navigationManager = NavigationManager.shared
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Register routes
-        let homeFactory = UIKitViewControllerFactory { context in
-            HomeViewController(parameters: context.parameters)
-        }
-        try? navigationManager.register(homeFactory, for: "home")
+struct MyNavigationHandler: NavigationHandler {
+    func canNavigate(to route: RouteID) -> Bool {
+        return [.home, .profile, .settings].contains(route)
     }
     
-    @IBAction func navigateToHome() {
-        Task {
-            navigationManager.navigate(to: "home")
+    func getNavigation(to route: RouteID) -> NavigationStep? {
+        switch route {
+        case .home:
+            return NavigationStep(
+                tab: .home,
+                type: .push,
+                factory: HomeViewFactory.self,
+                params: route.parameters
+            )
+        case .profile:
+            return NavigationStep(
+                tab: .profile,
+                type: .push,
+                factory: ProfileViewFactory.self,
+                params: route.parameters
+            )
+        default:
+            return nil
         }
     }
 }
+```
+
+### View Factory
+
+```swift
+import SwiftUI
+import RRNavigation
+
+struct HomeViewFactory: ViewFactory {
+    @ViewBuilder static func createView(params: [String: Any]?) -> some View {
+        HomeView()
+    }
+}
+```
+
+### Navigation
+
+```swift
+// Navigate to a route
+navigationManager.navigate(to: .home)
+
+// Navigate with parameters
+let routeWithParams = RouteID("profile").addingParameter("userId", value: "123")
+navigationManager.navigate(to: routeWithParams)
+
+// Present as sheet
+navigationManager.navigate(to: .settings) // If configured as sheet in handler
 ```
 
 ## Architecture
 
 ### Core Components
 
-- **NavigationManager**: Central navigation coordinator
-- **NavigationStrategy**: UI-specific navigation implementation
-- **RouteFactory**: Protocol for creating views/controllers
-- **NavigationState**: Observable state management
-- **RouteParameters**: Type-safe parameter passing
+- **NavigationManager**: Central navigation coordinator with ObservableObject support
+- **NavigationHandler**: Chain of responsibility pattern for route handling
+- **AppModule**: Represents different app states (authenticated/unauthenticated)
+- **RouteID**: Type-safe route identifiers with parameter support
+- **ViewFactory**: Protocol for creating SwiftUI views
+- **NavigationStep**: Defines navigation behavior (push, sheet, fullScreen)
+- **RRTab**: Tab configuration with root routes and icons
 
-### Strategy Pattern
+### App Module System
 
-The framework uses the Strategy Pattern to separate SwiftUI and UIKit implementations:
+The framework supports different app states through the AppModule system:
 
 ```swift
-// SwiftUI Strategy
-let swiftUIStrategy = NavigationStrategyType.swiftUI.createStrategy()
+// Define app modules
+let authenticatedModule = AppModule(
+    id: .authenticated,
+    rootView: AuthenticatedRootViewFactory.self,
+    contentMode: .tabStructure
+)
 
-// UIKit Strategy  
-let uikitStrategy = NavigationStrategyType.uikit.createStrategy()
+let unauthenticatedModule = AppModule(
+    id: .notAuthenticated,
+    rootView: LoginViewFactory.self,
+    contentMode: .contentOnly
+)
+
+// Register modules
+navigationManager.registerAppModule(authenticatedModule)
+navigationManager.registerAppModule(unauthenticatedModule)
 ```
 
-### Route Registration
+### Navigation Handler Pattern
 
-Routes are registered with factories that create the appropriate view or controller:
+Navigation handlers use the Chain of Responsibility pattern to organize route handling:
 
 ```swift
-// SwiftUI View Factory
-let viewFactory = SwiftUIViewFactory { context in
-    MySwiftUIView(parameters: context.parameters)
+struct MyNavigationHandler: NavigationHandler {
+    func canNavigate(to route: RouteID) -> Bool {
+        // Define which routes this handler can manage
+        return [.home, .profile, .settings].contains(route)
+    }
+    
+    func getNavigation(to route: RouteID) -> NavigationStep? {
+        // Return navigation configuration for each route
+        switch route {
+        case .home:
+            return NavigationStep(
+                tab: .home,
+                type: .push,
+                factory: HomeViewFactory.self,
+                params: route.parameters
+            )
+        default:
+            return nil
+        }
+    }
 }
-navigationManager.register(viewFactory, for: "my-route")
+```
 
-// UIKit View Controller Factory
-let controllerFactory = UIKitViewControllerFactory { context in
-    MyViewController(parameters: context.parameters)
+### Tab Management
+
+Tabs are registered with factories and managed automatically:
+
+```swift
+// Tab factory
+struct HomeTabFactory: RRTabFactory {
+    func create() -> RRTab {
+        RRTab(
+            id: .home,
+            name: "Home",
+            rootRouteID: .home,
+            icon: Image(systemName: "house.fill")
+        )
+    }
 }
-navigationManager.register(controllerFactory, for: "my-route")
+
+// Register tab
+navigationManager.registerTab(HomeTabFactory())
 ```
 
 ## Navigation Types
 
-The framework supports various navigation types:
+The framework supports three main navigation types:
 
-- **Push**: Standard push navigation
+- **Push**: Standard push navigation within NavigationStack
 - **Sheet**: Modal sheet presentation
-- **FullScreen**: Full screen modal
-- **Tab**: Tab-based navigation
-- **Modal**: Modal presentation
-- **Replace**: Replace current view
-
-## State Persistence
-
-Navigation state can be persisted and restored:
+- **FullScreen**: Full screen modal presentation
 
 ```swift
-// With persistence
-let persistence = UserDefaultsPersistence()
-let navigationManager = NavigationManager(
-    strategy: strategy,
-    persistence: persistence
-)
+// Configure navigation type in handler
+case .profile:
+    return NavigationStep(
+        tab: .profile,
+        type: .push,        // Push navigation
+        factory: ProfileViewFactory.self,
+        params: route.parameters
+    )
 
-// State is automatically saved and restored
+case .editProfile:
+    return NavigationStep(
+        tab: .profile,
+        type: .fullScreen,  // Full screen modal
+        factory: EditProfileViewFactory.self,
+        params: route.parameters
+    )
+
+case .settings:
+    return NavigationStep(
+        type: .sheet,       // Sheet presentation
+        factory: SettingsViewFactory.self,
+        params: route.parameters
+    )
 ```
 
-## Deep Linking
+## Route Parameters
 
-Routes support deep linking with query parameters:
+Routes support parameters for data passing:
 
 ```swift
-// Parse from URL
-let parameters = RouteParameters(from: "userId=123&name=John")
+// Create route with parameters
+let profileRoute = RouteID("profile")
+    .addingParameter("userId", value: "123")
+    .addingParameter("name", value: "John")
 
 // Navigate with parameters
-try await navigationManager.navigate(
-    to: "profile",
-    parameters: parameters
-)
-```
+navigationManager.navigate(to: profileRoute)
 
-## Error Handling
-
-The framework provides comprehensive error handling:
-
-```swift
-do {
-    navigationManager.navigate(to: "unknown-route")
-} catch NavigationError.routeNotFound(let key) {
-    print("Route not found: \(key)")
-} catch {
-    print("Navigation failed: \(error)")
+// Access parameters in view factory
+struct ProfileViewFactory: ViewFactory {
+    @ViewBuilder static func createView(params: [String: Any]?) -> some View {
+        let userId = params?["userId"] as? String ?? ""
+        ProfileView(userId: userId)
+    }
 }
 ```
 
-## Testing
+## Demo App
 
-The framework includes testing utilities:
+The framework includes a comprehensive demo app showcasing all features:
 
-```swift
-import RRNavigation
+### Running the Demo
 
-// In-memory persistence for testing
-let persistence = InMemoryPersistence()
-let navigationManager = NavigationManager(
-    strategy: strategy,
-    persistence: persistence
-)
+1. Open `RRNavigation.xcodeproj` in Xcode
+2. Select the `RRNavigationDemo` scheme
+3. Build and run on iOS Simulator or device
 
-// Test navigation
-    navigationManager.navigate(to: "test-route")
+### Demo Features
+
+- **Tab Navigation**: Home, Profile, and Settings tabs
+- **Modal Presentations**: Sheet and full-screen demos
+- **Route Parameters**: Parameter passing between views
+- **App Module Switching**: Authenticated/unauthenticated states
+- **Navigation Handlers**: Multiple handlers for different route groups
+
+### Demo Structure
+
 ```
-
-## Requirements
-
-- iOS 15.0+
-- macOS 12.0+
-- tvOS 15.0+
-- watchOS 8.0+
-- visionOS 1.0+
-- Swift 5.9+
+Demo/
+├── RRNavigationDemo/
+│   ├── Handlers/
+│   │   ├── DemoNavigationHandler.swift    # Main navigation logic
+│   │   └── PublicNavigationHandler.swift  # Public routes
+│   ├── Routes/
+│   │   ├── Routes.swift                  # Route definitions
+│   │   ├── Tabs.swift                    # Tab configurations
+│   │   └── AppModules.swift              # App module definitions
+│   ├── Factories/
+│   │   └── TabFactory.swift              # Tab factories
+│   └── Views/
+│       ├── HomeView.swift                # Home tab content
+│       ├── ProfileView.swift             # Profile tab content
+│       ├── SettingsView.swift            # Settings tab content
+│       └── ...                           # Additional demo views
+```
 
 ## Dependencies
 
