@@ -37,42 +37,85 @@ struct MainContentView: View {
     var body: some View {
         if let currentAppModuleID = navigationManager.currentAppModule,
            let currentAppModule = navigationManager.appModules.first(where: { $0.id == currentAppModuleID }) {
-            switch currentAppModule.contentMode {
-            case .contentOnly:
-                // Show content-only view (like login)
-                NavigationStack(path: $navigationManager.currentNavigationPath) {
-                    AnyView(currentAppModule.rootView.createView(params: nil))
-                        .navigationDestination(
-                            for: RouteID.self,
-                            destination: navigationManager.getRegisteredView
-                        )
-                }
-            case .tabStructure:
-                // Show tabbed navigation
-                TabView(selection: $navigationManager.currentTab) {
-                    ForEach(navigationManager.registeredTabs) { tab in
-                        NavigationStack(path: $navigationManager.currentNavigationPath) {
-                            navigationManager.getRootView(for: tab)
-                                .navigationDestination(
-                                    for: RouteID.self,
-                                    destination: navigationManager.getRegisteredView
-                                )
-                        }
-                        .tabItem {
-                            if let icon = tab.icon {
-                                icon
-                            }
-                            Text(tab.name)
-                        }
-                        .tag(tab.id)
-                    }
-                }
-            }
+            ContentModeView(appModule: currentAppModule)
         } else {
-            // Fallback if no current app module
-            Text("No App Module Selected")
-                .foregroundColor(.secondary)
+            FallbackView()
         }
+    }
+}
+
+// MARK: - Content Mode View
+struct ContentModeView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    let appModule: AppModule
+    
+    var body: some View {
+        switch appModule.contentMode {
+        case .contentOnly:
+            ContentOnlyView(rootView: appModule.rootView)
+        case .tabStructure:
+            TabStructureView()
+        }
+    }
+}
+
+// MARK: - Content Only View
+struct ContentOnlyView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    let rootView: any ViewFactory.Type
+    
+    var body: some View {
+        NavigationStack(path: $navigationManager.currentNavigationPath) {
+            AnyView(rootView.createView(params: nil))
+                .navigationDestination(
+                    for: RouteID.self,
+                    destination: navigationManager.getRegisteredView
+                )
+        }
+    }
+}
+
+// MARK: - Tab Structure View
+struct TabStructureView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    
+    var body: some View {
+        TabView(selection: $navigationManager.currentTab) {
+            ForEach(navigationManager.registeredTabs) { tab in
+                TabContentView(tab: tab)
+            }
+        }
+    }
+}
+
+// MARK: - Tab Content View
+struct TabContentView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    let tab: RRTab
+    
+    var body: some View {
+        NavigationStack(path: $navigationManager.currentNavigationPath) {
+            navigationManager.getRootView(for: tab)
+                .navigationDestination(
+                    for: RouteID.self,
+                    destination: navigationManager.getRegisteredView
+                )
+        }
+        .tabItem {
+            if let icon = tab.icon {
+                icon
+            }
+            Text(tab.name)
+        }
+        .tag(tab.id)
+    }
+}
+
+// MARK: - Fallback View
+struct FallbackView: View {
+    var body: some View {
+        Text("No App Module Selected")
+            .foregroundColor(.secondary)
     }
 }
 
