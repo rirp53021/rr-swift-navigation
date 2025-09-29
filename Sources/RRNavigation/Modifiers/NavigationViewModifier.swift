@@ -45,10 +45,7 @@ public struct NavigationViewModifier: ViewModifier {
     
     private func tabContent() -> some View {
         ForEach(navigationManager.registeredTabs) { tab in
-            NavigationStack(path: Binding(
-                get: { navigationManager.tabNavigationPaths[tab.id] ?? NavigationPath() },
-                set: { navigationManager.tabNavigationPaths[tab.id] = $0 }
-            )) {
+            NavigationStack(path: $navigationManager.currentNavigationPath) {
                 tabRootView(tab)
             }
             .tabItem { tabItem(tab) }

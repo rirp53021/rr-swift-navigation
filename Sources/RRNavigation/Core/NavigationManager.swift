@@ -9,7 +9,7 @@ import RRFoundation
 public class NavigationManager: ObservableObject {
     // MARK: - Published Properties
     internal var appModules: Set<AppModule> = []
-    @Published internal var currentAppModule: AppModuleID?
+    @Published public var currentAppModule: AppModuleID?
     @Published internal var currentNavigationPath: NavigationPath = NavigationPath()
     internal private(set) var registeredTabs: [RRTab] = []
     internal var tabNavigationPaths: [RRTabID: NavigationPath] = [:]
