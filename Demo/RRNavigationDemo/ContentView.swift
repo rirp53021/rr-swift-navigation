@@ -23,13 +23,24 @@ struct ContentView: View {
             .padding()
             
             // Main Content
-            if navigationManager.currentAppModule == .notAuthenticated {
-                // Show login view for not authenticated state
-                LoginView()
+            if let currentAppModuleID = navigationManager.currentAppModule,
+               let currentAppModule = navigationManager.appModules.first(where: { $0.id == currentAppModuleID }) {
+                switch currentAppModule.contentMode {
+                case .contentOnly:
+                    // Show content-only view (like login)
+                    let rootView = AnyView(currentAppModule.rootView.createView(params: nil))
+                    NavigationStack(path: $navigationManager.currentNavigationPath) {
+                        rootView
+                    }
+                case .tabStructure:
+                    // Show tabbed navigation
+                    EmptyView()
+                        .modifier(NavigationViewModifier())
+                }
             } else {
-                // Show tabbed navigation for authenticated state
-                EmptyView()
-                    .modifier(NavigationViewModifier())
+                // Fallback if no current app module
+                Text("No App Module Selected")
+                    .foregroundColor(.secondary)
             }
         }
     }

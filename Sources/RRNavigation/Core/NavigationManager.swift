@@ -57,17 +57,9 @@ public class NavigationManager: ObservableObject {
     }
     
     private func handleAppModuleChange(_ appModule: AppModule) {
-        switch appModule.contentMode {
-        case .contentOnly:
-            // Clear all tabs and navigation paths for content-only mode
-            clearAllTabs()
-            currentTab = nil
-            
-        case .tabStructure:
-            // Keep existing tabs or create new ones based on the app module
-            // This could be expanded to create specific tabs for the module
-            break
-        }
+        // App modules don't automatically clear tabs
+        // Tabs should be managed independently through registerTab/unregisterTab methods
+        // This method is reserved for future app module-specific logic if needed
     }
     
     /// Register a navigation handler
